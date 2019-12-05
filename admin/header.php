@@ -174,6 +174,8 @@ if(isset($_SESSION['admin']['id'])){
                             <ul class="nav nav-subnav">
                                 <li><a href="setting.php">General</a></li>
                                 <li><a href="setting.php#quickad_logo_watermark">Logo / Watermark</a></li>
+                                <li><a href="setting.php#quickad_android">Android App Setting</a></li>
+                                <li><a href="setting.php#quickad_push_notification">App Push Notification</a></li>
                                 <li><a href="setting.php#quickad_international">International</a></li>
                                 <li><a href="setting.php#quickad_email">Email Setting</a></li>
                                 <li><a href="setting.php#quickad_theme_setting">Theme Setting</a></li>
@@ -216,7 +218,7 @@ if(isset($_SESSION['admin']['id'])){
                 <!-- End drawer navigation -->
 
                 <div class="drawer-footer">
-                    <p class="copyright">Bylancer &copy;</p>
+                    <p class="copyright"><a href="https://bylancer.com" target="_blank">Quickad By Bylancer</a> &copy;</p>
                     <p class="copyright">Version : <?php echo $config['version']; ?></p>
                 </div>
             </div>
@@ -248,7 +250,7 @@ if(isset($_SESSION['admin']['id'])){
                             <li class="dropdown">
                                 <a href="#" data-toggle="dropdown">Pages <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="https://bylancer.com/products/demo/classified/Documentation/index.html" target="_blank">Documentation</a></li>
+                                    <li><a href="https://bylancer.com/products/demo/classified/documentation/index.html" target="_blank">Documentation</a></li>
                                     <li><a href="https://codecanyon.net/item/facebook-style-php-ajax-chat-zechat/16491266" target="_blank">Purchase Zechat license</a></li>
                                     <li><a href="https://codecanyon.net/item/wchat-fully-responsive-phpajax-chat/18047319" target="_blank">Purchase Wchat license</a></li>
                                 </ul>

@@ -552,17 +552,8 @@ $lang['YOUR_CITY'] = 'Th&agrave;nh phố của bạn';
 $lang['YOU_WANT_DELETE'] = 'Bạn muốn xóa Quảng cáo này';
 $lang['YUSERNAME'] = 'Username của bạn';
 $lang['ZIPCODE'] = 'M&atilde; bưu ch&iacute;nh';
-
-$lang['UE_OCCUPIED'] = 'Tên người dùng hoặc email đã bị chiếm dụng';
-$lang['ERROR_weFIX'] = 'Đã xảy ra lỗi, chúng tôi đang cố gắng khắc phục nó càng sớm càng tốt';
 $lang['CHECK_CONNMENT'] = 'Vui lòng kiểm tra kết nối internet của bạn';
-$lang['OWNTSHARE_EMAIL'] = 'Có vẻ như chủ sở hữu chưa chia sẻ id email của mình';
-$lang['INT_YR_PROPERTY'] = 'Tôi quan tâm đến tài sản của bạn';
-$lang['CAN_DISCUSS'] = 'Chúng tôi có thể thảo luận về';
-$lang['REGARDS'] = 'Trân trọng';
-$lang['CANCEL_FBLOGIN'] = 'Bạn đã hủy đăng nhập facebook, vui lòng đăng nhập để tiếp tục';
 $lang['CONFIRM'] = 'Xác nhận';
-$lang['OFFER_SUBMITTED'] = 'Đề nghị của bạn đã được gửi cho chủ sở hữu';
 $lang['CLASSIFIEDS'] = 'Rao vặt';
 $lang['MAKE_OFFER'] = 'Đưa ra lời đề nghị';
 $lang['SELLER_ASK_PRICE'] = 'Giá yêu cầu của người bán là';

@@ -48,7 +48,7 @@ if(checkloggedin())
             $page->SetParameter('SUB_IMAGE', '');
         }
         $page->SetParameter ('AUTHORTAGLINE', $ses_userdata['tagline']);
-        $page->SetParameter ('AUTHORABOUT', $ses_userdata['description']);
+        $page->SetParameter ('AUTHORABOUT', stripslashes(nl2br($ses_userdata['description'])));
 
         $page->SetParameter ('FACEBOOK', $ses_userdata['facebook']);
         $page->SetParameter ('TWITTER', $ses_userdata['twitter']);
@@ -135,7 +135,7 @@ if(checkloggedin())
             $page->SetParameter ('COUNTRY', $_POST['country']);
 
             $page->SetParameter ('AUTHORTAGLINE', $_POST['heading']);
-            $page->SetParameter ('AUTHORABOUT', $_POST['content']);
+            $page->SetParameter ('AUTHORABOUT', stripslashes(nl2br($_POST['content'])));
 
             $page->SetParameter ('FACEBOOK', $_POST['facebook']);
             $page->SetParameter ('TWITTER', $_POST['twitter']);
@@ -154,11 +154,14 @@ if(checkloggedin())
         }
         else{
             $notify = isset($_POST['notify']) ? '1' : '0';
+
             if (isset($_POST['choice']) && is_array($_POST['choice'])) {
                 $choice = validate_input(implode(',', $_POST['choice']));
             }else{
                 $choice = '';
             }
+
+            $description = addslashes($_POST['content']);
 
             $website_link = addhttp($_POST['website']);
             $now = date("Y-m-d H:i:s");
@@ -166,7 +169,7 @@ if(checkloggedin())
             $user_update->set('name', $_POST['name']);
             $user_update->set('image', $avatarName);
             $user_update->set('tagline', $_POST['heading']);
-            $user_update->set('description', $_POST['content']);
+            $user_update->set('description', $description);
             $user_update->set('phone', $_POST['phone']);
             $user_update->set('postcode', $_POST['postcode']);
             $user_update->set('address', $_POST['address']);

@@ -31,7 +31,17 @@ if( !empty($params['search']['value']) ){
         $where .=" OR cat.cat_name LIKE '".$params['search']['value']."%' ) ";
 
         $where .=" AND ( p.status = '".$_GET['status']."' )";
-    }else{
+    }
+    elseif(isset($_GET['hide'])) {
+        $where .=" WHERE ";
+        $where .=" ( p.product_name LIKE '%".$params['search']['value']."%' ";
+        $where .=" OR u.username LIKE '%".$params['search']['value']."%' ";
+        $where .=" OR c.name LIKE '".$params['search']['value']."%' ";
+        $where .=" OR cat.cat_name LIKE '".$params['search']['value']."%' ) ";
+
+        $where .=" AND ( p.hide = '".$_GET['hide']."' )";
+    }
+    else{
         $where .=" WHERE ";
         $where .=" ( p.product_name LIKE '%".$params['search']['value']."%' ";
         $where .=" OR u.username LIKE '%".$params['search']['value']."%' ";
@@ -56,6 +66,10 @@ if(isset($where) && $where != '') {
 }else{
     if(isset($_GET['status'])){
         $where .=" Where ( p.status = '".$_GET['status']."' )";
+        $sqlTot .= $where;
+        $sqlRec .= $where;
+    }elseif(isset($_GET['hide'])) {
+        $where .=" Where ( p.hide = '".$_GET['hide']."' )";
         $sqlTot .= $where;
         $sqlRec .= $where;
     }

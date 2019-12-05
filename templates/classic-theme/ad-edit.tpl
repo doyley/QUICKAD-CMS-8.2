@@ -478,7 +478,7 @@
                                                 <li class="form-step">
                                                     <div class="tg-inputwithicon">
                                                         <div class="geo-location"><i class="fa fa-crosshairs"></i></div>
-                                                        <input type="text" class="large-input focusable-field" placeholder="{LANG_AD_LOCATION}" name="location" id="address-autocomplete">
+                                                        <input type="text" class="large-input focusable-field" placeholder="{LANG_AD_LOCATION}" name="location" id="address-autocomplete" value="{LOCATION}">
                                                         <input type="hidden" id="latitude" name="latitude"  value="{LATITUDE}"/>
                                                         <input type="hidden" id="longitude" name="longitude" value="{LONGITUDE}"/>
                                                         <div class="map height-200px shadow" id="map"></div>
@@ -764,8 +764,8 @@ IF("{POST_ADDRESS_MODE}"=="1"){
     else{
         var getCountry = "all";
     }
-    simpleMap(_latitude, _longitude, element, true);
-
+	
+   
     $('#postadcity').on('change', function() {
         var data = $("#postadcity option:selected").val();
         var custom_data= $("#postadcity").select2('data')[0];
@@ -776,6 +776,8 @@ IF("{POST_ADDRESS_MODE}"=="1"){
         $('#longitude').val(longitude);
         simpleMap(latitude, longitude, element, true, address);
     });
+	
+	simpleMap(_latitude, _longitude, element, true);
 </script>
 <!-- If address mode enable: ADDRESS FIELD JAVASCRIPT -->
 {:IF}

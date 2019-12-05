@@ -14,7 +14,7 @@
 
                 <div class="p-3">
                     <div class="pricing-plan recommended text-center border py-7 px-2 bg-light rounded-10">
-                        IF("{SUB_TYPES.recommended}"=="1"){ <div class="ribbon"><i class="fa fa-star-o"></i></div> {:IF}
+                        IF("{SUB_TYPES.recommended}"=="yes"){ <div class="ribbon"><i class="fa fa-star-o"></i></div> {:IF}
                         <h4 class="font-weight-bold text-gray-600 mb-4">{SUB_TYPES.title}</h4>
                         <p class="font-weight-bold font-size-20 mb-4">{CURRENCY_SIGN}<span class="price-text font-size-35 align-middle">{SUB_TYPES.cost}</span>/<span class="font-size-14">{SUB_TYPES.term}</p>
 
@@ -22,11 +22,11 @@
                         <ul class="list-unstyled mb-6">
                             <li class="mb-2">
                                 <span class="icon-text yes"><i class="fa fa-check-circle mr-2"></i></span>
-                                {LANG_AD_POST_LIMIT} : <span class="font-weight-bold">{SUB_TYPES.limit} </span>
+                                {LANG_AD_POST_LIMIT} <span class="font-weight-bold">{SUB_TYPES.limit} </span>
                             </li>
                             <li class="mb-2">
                                 <span class="icon-text yes"><i class="fa fa-check-circle mr-2"></i></span>
-                                {LANG_AD_EXP_IN} : <span class="font-weight-bold">{SUB_TYPES.duration} </span> {LANG_DAYS}
+                                {LANG_AD_EXP_IN} <span class="font-weight-bold">{SUB_TYPES.duration} </span> {LANG_DAYS}
                             </li>
                             <li class="mb-2">
                                 <span class="icon-text yes"><i class="fa fa-check-circle mr-2"></i></span>

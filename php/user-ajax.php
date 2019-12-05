@@ -41,6 +41,7 @@ if(isset($_POST['action'])){
     if ($_POST['action'] == "ajaxlogin") {ajaxlogin();}
     if ($_POST['action'] == "email_verify") {email_verify();}
     if ($_POST['action'] == "quickad_ajax_home_search") {quickad_ajax_home_search();}
+
 }
 
 function ajaxlogin(){
@@ -373,7 +374,8 @@ INNER JOIN `".$config['db']['pre']."subadmin1` AS s ON s.code = c.subadmin1_code
     $rows = $pdo->query($query);
     if(empty($_GET["rowcount"])) {
         $pdo = ORM::get_db();
-        $_GET["rowcount"] = $rowcount = count($pdo->query($sql));
+        $result = $pdo->query($sql);
+        $_GET["rowcount"] = $rowcount = $result->rowCount();
     }
 
     $pages  = ceil($_GET["rowcount"]/$perPage);
@@ -1000,7 +1002,7 @@ function getlocHomemap()
             $data[$i]['cat_icon'] = $catIcon;
             $data[$i]['marker_image'] = $pic;
             $data[$i]['url'] = $url;
-            $data[$i]['description'] = $desc;
+            $data[$i]['description'] = strip_tags(htmlentities($desc));
 
             $i++;
         }
@@ -1014,55 +1016,54 @@ function getlocHomemap()
 function openlocatoionPopup()
 {
     global $config;
-    $rows = ORM::for_table($config['db']['pre'].'product')->find_one($_POST['id']);
+    $result = ORM::for_table($config['db']['pre'].'product')->find_one($_POST['id']);
 
     $data = array();
     $i = 0;
-    if (!empty($rows)) {
-        foreach ($rows as $result) {
-            $id = $result['id'];
-            $featured = $result['featured'];
-            $urgent = $result['urgent'];
-            $highlight = $result['highlight'];
-            $title = $result['product_name'];
-            $cat = $result['category'];
-            $price = $result['price'];
-            $pics = $result['screen_shot'];
-            $location = $result['location'];
-            $city_id = $result['city'];
-            $cityname = get_cityName_by_id($result['city']);
-            $country = get_countryName_by_id($result['country']);
+    if (!empty($result)) {
+        $id = $result['id'];
+        $featured = $result['featured'];
+        $urgent = $result['urgent'];
+        $highlight = $result['highlight'];
+        $title = $result['product_name'];
+        $cat = $result['category'];
+        $price = $result['price'];
+        $pics = $result['screen_shot'];
+        $location = $result['location'];
+        $city_id = $result['city'];
+        $cityname = get_cityName_by_id($result['city']);
+        $country = get_countryName_by_id($result['country']);
 
-            $location = $cityname.", ".$country;
+        $location = $cityname.", ".$country;
 
-            $latlong = $result['latlong'];
-            $desc = $result['description'];
-            $url = $config['site_url']."ad/".$id;
+        $latlong = $result['latlong'];
+        $desc = strip_tags(htmlentities($result['description']));
+        $url = $config['site_url']."ad/".$id;
 
-            $fetch = ORM::for_table($config['db']['pre'].'catagory_main')
-                ->where('cat_id',$cat)
-                ->find_one();
-            $catIcon = $fetch['icon'];
-            $catname = $fetch['cat_name'];
+        $fetch = ORM::for_table($config['db']['pre'].'catagory_main')
+            ->where('cat_id',$cat)
+            ->find_one();
+        $catIcon = $fetch['icon'];
+        $catname = $fetch['cat_name'];
 
-            $map = explode(',', $latlong);
-            $lat = $map[0];
-            $long = $map[1];
-
-
-            $picture = explode(',', $pics);
-            $pic_count = count($picture);
-            if($picture[0] != ""){
-                $pic = $picture[0];
-                $pic = $config['site_url'].'storage/products/thumb/'.$pic;
-                $pic = '<img class="activator" src="' . $pic . '">';
-            }else{
-                $pic = "";
-            }
+        $map = explode(',', $latlong);
+        $lat = $map[0];
+        $long = $map[1];
 
 
+        $picture = explode(',', $pics);
+        $pic_count = count($picture);
+        if($picture[0] != ""){
+            $pic = $picture[0];
+            $pic = $config['site_url'].'storage/products/thumb/'.$pic;
+            $pic = '<img class="activator" src="' . $pic . '">';
+        }else{
+            $pic = "";
+        }
 
-            echo '<div class="item gmapAdBox" data-id="' . $id . '" style="margin-bottom: 0px;">
+
+
+        echo '<div class="item gmapAdBox" data-id="' . $id . '" style="margin-bottom: 0px;">
                     <a href="' . $url . '" style="display: block;position: relative;">
                      <div class="card small">
                         <div class="card-image waves-effect waves-block waves-light">
@@ -1077,8 +1078,6 @@ function openlocatoionPopup()
 
                     </a>
                 </div>';
-
-        }
     } else {
         echo false;
     }

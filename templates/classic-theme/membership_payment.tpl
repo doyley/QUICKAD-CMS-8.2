@@ -6,7 +6,7 @@
             <!-- breadcrumb -->
             <ol class="breadcrumb">
                 <li><a href="{LINK_INDEX}"><i class="fa fa-home"></i> {LANG_HOME}</a></li>
-                <li class="active">{LANG_ACCOUNT_SETTING}</li>
+                <li class="active">{LANG_PAYMENT_METHOD}</li>
                 <div class="pull-right back-result"><a href="{LINK_LISTING}"><i class="fa fa-angle-double-left"></i>{LANG_BACK_RESULT}</a></div>
             </ol>
             <!-- breadcrumb -->
@@ -15,287 +15,297 @@
         <div class="row">
             <!-- Page-Content -->
             <div class="col-lg-8 col-md-8 page-content">
-                <div class="">
+                <h2 class="margin-top-55 margin-bottom-30">{LANG_PAYMENT_METHOD}</h2>
 
-                    <h2 class="margin-top-55 margin-bottom-30">{LANG_PAYMENT_METHOD}</h2>
+                <!-- Payment Methods Accordion -->
+                <form id="subscribeForm" method="POST" novalidate="novalidate">
+                    <div class="payment">
+                        {LOOP: PAYMENT_TYPES}
 
-                    <!-- Payment Methods Accordion -->
-                    <form id="subscribeForm" method="POST" novalidate="novalidate">
-                        <div class="payment">
-                            {LOOP: PAYMENT_TYPES}
-                                <!-- Paypal Payment Method Check -->
-                                IF("{PAYMENT_TYPES.folder}"=="paypal"){
-                                <div class="payment-tab payment-tab-active">
-                                    <div class="payment-tab-trigger">
-                                        <input name="payment_method_id" checked class="payment_method_id" id="{PAYMENT_TYPES.folder}" type="radio" value="{PAYMENT_TYPES.id}" data-name="paypal">
-                                        <label for="{PAYMENT_TYPES.folder}">{PAYMENT_TYPES.title}</label>
-                                        <img class="payment-logo {PAYMENT_TYPES.folder}" src="{SITE_URL}storage/payments/{PAYMENT_TYPES.folder}/logo.png" alt="">
-                                    </div>
-
-                                    <div class="payment-tab-content">
-                                        <p>{LANG_REDIRECT_PAYPAL}</p>
-                                    </div>
+                            IF("{PAYMENT_TYPES.folder}"=="paypal"){
+                            <!-- Paypal-->
+                            <div class="payment-tab payment-tab-active">
+                                <div class="payment-tab-trigger">
+                                    <input name="payment_method_id" checked class="payment_method_id" id="{PAYMENT_TYPES.folder}" type="radio" value="{PAYMENT_TYPES.id}" data-name="paypal">
+                                    <label for="{PAYMENT_TYPES.folder}">{PAYMENT_TYPES.title}</label>
+                                    <img class="payment-logo {PAYMENT_TYPES.folder}" src="{SITE_URL}storage/payments/{PAYMENT_TYPES.folder}/logo.png" alt="">
                                 </div>
 
-                            {:IF}
+                                <div class="payment-tab-content">
+                                    <p>{LANG_REDIRECT_PAYPAL}</p>
+                                </div>
+                            </div>
+                            <!-- Paypal -->
+                        {:IF}
 
-                                <!-- Paypal Payment Method Check -->
-                                IF("{PAYMENT_TYPES.folder}"=="paystack"){
-                                <div class="payment-tab">
-                                    <div class="payment-tab-trigger">
-                                        <input name="payment_method_id" class="payment_method_id" id="{PAYMENT_TYPES.folder}" type="radio" value="{PAYMENT_TYPES.id}" data-name="paystack">
-                                        <label for="{PAYMENT_TYPES.folder}">{PAYMENT_TYPES.title}</label>
-                                        <img class="payment-logo {PAYMENT_TYPES.folder}" src="{SITE_URL}storage/payments/{PAYMENT_TYPES.folder}/logo.png" alt="">
-                                    </div>
 
-                                    <div class="payment-tab-content">
-                                        <p>{LANG_REDIRECT_PAYSTACK}</p>
-                                    </div>
+                            IF("{PAYMENT_TYPES.folder}"=="paystack"){
+                            <!-- Paystack -->
+                            <div class="payment-tab">
+                                <div class="payment-tab-trigger">
+                                    <input name="payment_method_id" class="payment_method_id" id="{PAYMENT_TYPES.folder}" type="radio" value="{PAYMENT_TYPES.id}" data-name="paystack">
+                                    <label for="{PAYMENT_TYPES.folder}">{PAYMENT_TYPES.title}</label>
+                                    <img class="payment-logo {PAYMENT_TYPES.folder}" src="{SITE_URL}storage/payments/{PAYMENT_TYPES.folder}/logo.png" alt="">
                                 </div>
 
-                            {:IF}
+                                <div class="payment-tab-content">
+                                    <p>{LANG_REDIRECT_PAYSTACK}</p>
+                                </div>
+                            </div>
+                            <!-- Paystack -->
+                        {:IF}
+                            IF("{PAYMENT_TYPES.folder}"=="payumoney"){
+                            <!-- Payumoney -->
+                            <div class="payment-tab">
+                                <div class="payment-tab-trigger">
+                                    <input name="payment_method_id" class="payment_method_id" id="{PAYMENT_TYPES.folder}" type="radio" value="{PAYMENT_TYPES.id}" data-name="payumoney">
+                                    <label for="{PAYMENT_TYPES.folder}">{PAYMENT_TYPES.title}</label>
+                                    <img class="payment-logo {PAYMENT_TYPES.folder}" src="{SITE_URL}storage/payments/{PAYMENT_TYPES.folder}/logo.png" alt="">
+                                </div>
 
-                                <!-- Stripe Payment Method Check -->
+                                <div class="payment-tab-content">
+                                    <p>{LANG_REDIRECT_PAYUMONEY}</p>
+                                </div>
+                            </div>
+                            <!-- Payumoney -->
+                        {:IF}
                             IF("{PAYMENT_TYPES.folder}"=="stripe"){
+                            <!-- Stripe-->
+                            <div class="payment-tab">
 
-                                <div class="payment-tab">
+                                <div class="payment-tab-trigger">
+                                    <input name="payment_method_id" class="payment_method_id" id="creditCart" type="radio" value="{PAYMENT_TYPES.id}"  data-name="stripe">
+                                    <label for="creditCart">{LANG_CREDIT_DEBIT_CARD}</label>
+                                    <img class="payment-logo" src="{SITE_URL}storage/payments/{PAYMENT_TYPES.folder}/logo.png" alt="">
+                                </div>
+                                <div class="payment-tab-content">
 
-                                    <div class="payment-tab-trigger">
-                                        <input name="payment_method_id" class="payment_method_id" id="creditCart" type="radio" value="{PAYMENT_TYPES.id}"  data-name="stripe">
-                                        <label for="creditCart">{LANG_CREDIT_DEBIT_CARD}</label>
-                                        <img class="payment-logo" src="{SITE_URL}storage/payments/{PAYMENT_TYPES.folder}/logo.png" alt="">
+                                    <div class="row">
+                                        <div class="col-md-12 col-xs-12">
+                                            <div class="card-label form-group">
+                                                <label for="stripeCardNumber">{LANG_CARD_NUMBER}</label>
+                                                <input type="text" class="form-control" name="stripeCardNumber" placeholder="{LANG_VAILD_CARD_NUMBER}" autocomplete="cc-number" required autofocus/>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="payment-tab-content">
-
-                                        <div class="row">
-                                            <div class="col-xs-12">
-                                                <div class="card-label form-group">
-                                                    <label for="stripeCardNumber">{LANG_CARD_NUMBER}</label>
-                                                    <input type="text" class="form-control" name="stripeCardNumber" placeholder="{LANG_VAILD_CARD_NUMBER}" autocomplete="cc-number" required autofocus/>
-                                                </div>
+                                    <div class="row">
+                                        <div class="col-xs-7 col-md-7">
+                                            <div class="card-label form-group">
+                                                <label for="stripeCardExpiry"><span class="hidden-xs">{LANG_EXPIRATION}</span><span class="visible-xs-inline">{LANG_EXP}</span> {LANG_DATE_CAP}</label>
+                                                <input type="tel" class="form-control" name="stripeCardExpiry" placeholder="MM / YY" autocomplete="cc-exp" required/>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-xs-7 col-md-7">
-                                                <div class="card-label form-group">
-                                                    <label for="stripeCardExpiry"><span class="hidden-xs">{LANG_EXPIRATION}</span><span class="visible-xs-inline">{LANG_EXP}</span> {LANG_DATE_CAP}</label>
-                                                    <input type="tel" class="form-control" name="stripeCardExpiry" placeholder="MM / YY" autocomplete="cc-exp" required/>
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-5 col-md-5 pull-right">
-                                                <div class="card-label form-group">
-                                                    <label for="stripeCardCVC">{LANG_CV_CODE}</label>
-                                                    <input type="tel" class="form-control" name="stripeCardCVC" placeholder="CVC" autocomplete="cc-csc" required/>
-                                                </div>
+                                        <div class="col-xs-5 col-md-5 pull-right">
+                                            <div class="card-label form-group">
+                                                <label for="stripeCardCVC">{LANG_CV_CODE}</label>
+                                                <input type="tel" class="form-control" name="stripeCardCVC" placeholder="CVC" autocomplete="cc-csc" required/>
                                             </div>
                                         </div>
-                                        <div id="stripePaymentErrors">
-                                            <div class="alert alert-danger">
-                                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                                <span class="payment-errors"></span>
-                                            </div>
+                                    </div>
+                                    <div id="stripePaymentErrors">
+                                        <div class="alert alert-danger">
+                                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                            <span class="payment-errors"></span>
                                         </div>
                                     </div>
                                 </div>
-                            {:IF}
+                            </div>
+                            <!-- Stripe-->
+                        {:IF}
 
-                                <!-- 2checkout Payment Method Check -->
-                                IF("{PAYMENT_TYPES.folder}"=="2checkout"){
-                                <div class="payment-tab">
-                                    <div class="payment-tab-trigger">
-                                        <input name="payment_method_id" class="payment_method_id" id="{PAYMENT_TYPES.folder}" type="radio" value="{PAYMENT_TYPES.id}" data-name="2checkout">
-                                        <label for="{PAYMENT_TYPES.folder}">{PAYMENT_TYPES.title}</label>
-                                        <img class="payment-logo {PAYMENT_TYPES.folder}" src="{SITE_URL}storage/payments/{PAYMENT_TYPES.folder}/logo.png" alt="">
-                                    </div>
-                                    <div class="payment-tab-content">
-                                        <!-- CREDIT CARD FORM STARTS HERE -->
-                                        <div class="row">
-                                            <div class="col-xs-12">
-                                                <div class="card-label form-group">
-                                                    <label for="checkoutCardNumber">{LANG_CARD_NUMBER}</label>
-                                                    <input type="text" class="form-control" name="checkoutCardNumber" placeholder="{LANG_VAILD_CARD_NUMBER}" autocomplete="cc-number" required autofocus/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-xs-7 col-md-7">
-                                                <div class="card-label form-group">
-                                                    <label for="checkoutCardExpiry"><span class="hidden-xs">{LANG_EXPIRATION}</span><span class="visible-xs-inline">{LANG_EXP}</span> {LANG_DATE_CAP}</label>
-                                                    <input type="tel" class="form-control" name="checkoutCardExpiry" placeholder="MM / YYYY" autocomplete="cc-exp" required="" aria-required="true" aria-invalid="false">
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-5 col-md-5 pull-right">
-                                                <div class="card-label form-group">
-                                                    <label for="checkoutCardCVC">{LANG_CV_CODE}</label>
-                                                    <input type="tel" class="form-control" name="checkoutCardCVC" placeholder="CVC" autocomplete="cc-csc" required/>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- name -->
-                                        <div class="row">
-                                            <div class="col-xs-7 col-md-7">
-                                                <div class="card-label form-group">
-                                                    <label for="checkoutCardFirstName">{LANG_FIRST_NAME}</label>
-                                                    <input
-                                                            type="tel"
-                                                            class="form-control"
-                                                            name="checkoutCardFirstName"
-                                                            placeholder="{LANG_FIRST_NAME}"
-                                                            required
-                                                            />
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-5 col-md-5 pull-right">
-                                                <div class="card-label form-group">
-                                                    <label for="checkoutCardLastName">{LANG_LAST_NAME}</label>
-                                                    <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            name="checkoutCardLastName"
-                                                            placeholder="{LANG_LAST_NAME}"
-                                                            required
-                                                            />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- city -->
-                                        <div class="row">
-                                            <div class="col-xs-7 col-md-7">
-                                                <div class="card-label form-group">
-                                                    <label for="checkoutBillingAddress">{LANG_ADDRESS}</label>
-                                                    <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            name="checkoutBillingAddress"
-                                                            placeholder="{LANG_ADDRESS}"
-                                                            required
-                                                            />
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-5 col-md-5 pull-right">
-                                                <div class="card-label form-group">
-                                                    <label for="checkoutBillingCity">{LANG_CITY}</label>
-                                                    <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            name="checkoutBillingCity"
-                                                            placeholder="{LANG_CITY}"
-                                                            required
-                                                            />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Country -->
-                                        <div class="row">
-                                            <div class="col-xs-4 col-md-4">
-                                                <div class="card-label form-group">
-                                                    <label for="checkoutBillingState">{LANG_STATE}</label>
-                                                    <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            name="checkoutBillingState"
-                                                            placeholder="{LANG_STATE}"
-                                                            required
-                                                            />
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-4 col-md-4 pull-right">
-                                                <div class="card-label form-group">
-                                                    <label for="checkoutBillingZipcode">{LANG_ZIPCODE}</label>
-                                                    <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            name="checkoutBillingZipcode"
-                                                            placeholder="{LANG_ZIPCODE}"
-                                                            required
-                                                            />
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-4 col-md-4 pull-right">
-                                                <div class="card-label form-group">
-                                                    <label for="checkoutBillingCountry">{LANG_COUNTRY}</label>
-                                                    <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            name="checkoutBillingCountry"
-                                                            placeholder="{LANG_COUNTRY}"
-                                                            required
-                                                            />
-                                                </div>
-                                            </div>
-
-                                            <div id="checkoutPaymentErrors" style="display:none;">
-                                                <div class="col-xs-12">
-                                                    <p class="payment-errors"></p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- CREDIT CARD FORM ENDS HERE -->
-
-                                    </div>
-
+                            IF("{PAYMENT_TYPES.folder}"=="2checkout"){
+                            <!-- 2checkout -->
+                            <div class="payment-tab">
+                                <div class="payment-tab-trigger">
+                                    <input name="payment_method_id" class="payment_method_id" id="{PAYMENT_TYPES.folder}" type="radio" value="{PAYMENT_TYPES.id}" data-name="2checkout">
+                                    <label for="{PAYMENT_TYPES.folder}">{PAYMENT_TYPES.title}</label>
+                                    <img class="payment-logo {PAYMENT_TYPES.folder}" src="{SITE_URL}storage/payments/{PAYMENT_TYPES.folder}/logo.png" alt="">
                                 </div>
-                            {:IF}
+                                <div class="payment-tab-content">
+                                    <!-- CREDIT CARD FORM STARTS HERE -->
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-12">
+                                            <div class="card-label form-group">
+                                                <label for="checkoutCardNumber">{LANG_CARD_NUMBER}</label>
+                                                <input type="text" class="form-control" name="checkoutCardNumber" placeholder="{LANG_VAILD_CARD_NUMBER}" autocomplete="cc-number" required autofocus/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-7 col-md-7">
+                                            <div class="card-label form-group">
+                                                <label for="checkoutCardExpiry"><span class="hidden-xs">{LANG_EXPIRATION}</span><span class="visible-xs-inline">{LANG_EXP}</span> {LANG_DATE_CAP}</label>
+                                                <input type="tel" class="form-control" name="checkoutCardExpiry" placeholder="MM / YYYY" autocomplete="cc-exp" required="" aria-required="true" aria-invalid="false">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-5 col-md-5 pull-right">
+                                            <div class="card-label form-group">
+                                                <label for="checkoutCardCVC">{LANG_CV_CODE}</label>
+                                                <input type="tel" class="form-control" name="checkoutCardCVC" placeholder="CVC" autocomplete="cc-csc" required/>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                <!-- Offline Payment Method Check -->
+                                    <!-- name -->
+                                    <div class="row">
+                                        <div class="col-xs-7 col-md-7">
+                                            <div class="card-label form-group">
+                                                <label for="checkoutCardFirstName">{LANG_FIRST_NAME}</label>
+                                                <input
+                                                        type="tel"
+                                                        class="form-control"
+                                                        name="checkoutCardFirstName"
+                                                        placeholder="{LANG_FIRST_NAME}"
+                                                        required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-5 col-md-5 pull-right">
+                                            <div class="card-label form-group">
+                                                <label for="checkoutCardLastName">{LANG_LAST_NAME}</label>
+                                                <input
+                                                        type="text"
+                                                        class="form-control"
+                                                        name="checkoutCardLastName"
+                                                        placeholder="{LANG_LAST_NAME}"
+                                                        required
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- city -->
+                                    <div class="row">
+                                        <div class="col-xs-7 col-md-7">
+                                            <div class="card-label form-group">
+                                                <label for="checkoutBillingAddress">{LANG_ADDRESS}</label>
+                                                <input
+                                                        type="text"
+                                                        class="form-control"
+                                                        name="checkoutBillingAddress"
+                                                        placeholder="{LANG_ADDRESS}"
+                                                        required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-5 col-md-5 pull-right">
+                                            <div class="card-label form-group">
+                                                <label for="checkoutBillingCity">{LANG_CITY}</label>
+                                                <input
+                                                        type="text"
+                                                        class="form-control"
+                                                        name="checkoutBillingCity"
+                                                        placeholder="{LANG_CITY}"
+                                                        required
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Country -->
+                                    <div class="row">
+                                        <div class="col-xs-4 col-md-4">
+                                            <div class="card-label form-group">
+                                                <label for="checkoutBillingState">{LANG_STATE}</label>
+                                                <input
+                                                        type="text"
+                                                        class="form-control"
+                                                        name="checkoutBillingState"
+                                                        placeholder="{LANG_STATE}"
+                                                        required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-4 col-md-4 pull-right">
+                                            <div class="card-label form-group">
+                                                <label for="checkoutBillingZipcode">{LANG_ZIPCODE}</label>
+                                                <input
+                                                        type="text"
+                                                        class="form-control"
+                                                        name="checkoutBillingZipcode"
+                                                        placeholder="{LANG_ZIPCODE}"
+                                                        required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-4 col-md-4 pull-right">
+                                            <div class="card-label form-group">
+                                                <label for="checkoutBillingCountry">{LANG_COUNTRY}</label>
+                                                <input
+                                                        type="text"
+                                                        class="form-control"
+                                                        name="checkoutBillingCountry"
+                                                        placeholder="{LANG_COUNTRY}"
+                                                        required
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div id="checkoutPaymentErrors" style="display:none;">
+                                            <div class="col-xs-12">
+                                                <p class="payment-errors"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- CREDIT CARD FORM ENDS HERE -->
+                                </div>
+
+                            </div>
+                            <!-- 2checkout -->
+                        {:IF}
+
+
                             IF("{PAYMENT_TYPES.folder}"=="wire_transfer"){
-                                <div class="payment-tab">
-                                    <div class="payment-tab-trigger">
-                                        <input name="payment_method_id" class="payment_method_id" id="{PAYMENT_TYPES.folder}" type="radio" value="{PAYMENT_TYPES.id}" data-name="offlinepayment">
-                                        <label for="{PAYMENT_TYPES.folder}">{LANG_BANK_DEPOST_OFF_PAY}</label>
-                                        <img class="payment-logo {PAYMENT_TYPES.folder}" src="{SITE_URL}storage/payments/{PAYMENT_TYPES.folder}/logo.png" alt="">
-                                    </div>
-
-                                    <div class="payment-tab-content">
-                                        <div class="quickad-template">
-                                            <table class="default-table table-alt-row PaymentMethod-infoTable">
-                                                <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <h5 class="PaymentMethod-heading">{LANG_BANK_ACCOUNT_DETAILS}</h5>
-                                                        <span class="PaymentMethod-info">{BANK_INFO}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <h5 class="PaymentMethod-heading">{LANG_REFERENCE}</h5>
-                                                        <span class="PaymentMethod-info">
-                                                            {LANG_MEMBERSHIPPLAN} : {ORDER_TITLE}<br>
-                                                            {LANG_USERNAME}: {USERNAME}<br><br>
-                                                            {LANG_OFFLINE_CREDIT_NOTE}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <h5 class="PaymentMethod-heading">{LANG_AMOUNT_TO_SEND}</h5>
-                                                        <span class="PaymentMethod-info">{CURRENCY_SIGN}{AMOUNT}</span>
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-
-                                        </div>
-
-                                    </div>
+                            <!-- Offline Payment Method -->
+                            <div class="payment-tab">
+                                <div class="payment-tab-trigger">
+                                    <input name="payment_method_id" class="payment_method_id" id="{PAYMENT_TYPES.folder}" type="radio" value="{PAYMENT_TYPES.id}" data-name="offlinepayment">
+                                    <label for="{PAYMENT_TYPES.folder}">{LANG_BANK_DEPOST_OFF_PAY}</label>
+                                    <img class="payment-logo {PAYMENT_TYPES.folder}" src="{SITE_URL}storage/payments/{PAYMENT_TYPES.folder}/logo.png" alt="">
                                 </div>
-                            {:IF}
 
+                                <div class="payment-tab-content">
+                                    <div class="quickad-template">
+                                        <table class="default-table table-alt-row PaymentMethod-infoTable">
+                                            <tbody>
+                                            <tr>
+                                                <td>
+                                                    <h5 class="PaymentMethod-heading">{LANG_BANK_ACCOUNT_DETAILS}</h5>
+                                                    <span class="PaymentMethod-info">{BANK_INFO}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <h5 class="PaymentMethod-heading">{LANG_REFERENCE}</h5>
+                                                    <span class="PaymentMethod-info">
+                                                            {LANG_MEMBERSHIPPLAN} : {ORDER_TITLE}<br>
+                                                        {LANG_USERNAME}: {USERNAME}<br><br>
+                                                        {LANG_OFFLINE_CREDIT_NOTE}
+                                                        </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <h5 class="PaymentMethod-heading">{LANG_AMOUNT_TO_SEND}</h5>
+                                                    <span class="PaymentMethod-info">{CURRENCY_SIGN}{AMOUNT}</span>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
 
+                                    </div>
 
+                                </div>
+                            </div>
+                            <!-- Offline Payment Method -->
+                        {:IF}
 
+                        {/LOOP: PAYMENT_TYPES}
+                    </div>
+                    <!-- Payment Methods Accordion / End -->
+                    <input type="hidden" name="upgrade" value="{UPGRADE}" />
+                    <button type="submit" name="Submit" class="btn btn-primary margin-top-55 subscribeNow" id="subscribeNow">{LANG_CONFIRM_PAY}</button>
+                </form>
 
-                            {/LOOP: PAYMENT_TYPES}
-                        </div>
-                        <!-- Payment Methods Accordion / End -->
-                        <input type="hidden" name="upgrade" value="{UPGRADE}" />
-                        <button type="submit" name="Submit" class="btn btn-primary margin-top-55 subscribeNow" id="subscribeNow">{LANG_CONFIRM_PAY}</button>
-                    </form>
-
-                </div>
-                <!-- user-pro-edit -->
             </div>
             <!-- # End Page-Content -->
 
@@ -940,6 +950,37 @@
 </script>
 
 
+<!-- payumoney Payment Method Check -->
+<script>
+
+    $(document).ready(function ()
+    {
+        var paymentMethod = $('input[name="payment_method_id"]:checked').data("name");
+
+        $('.payment_method_id').on('change', function () {
+            paymentMethod = $(this).data('name');
+        });
+
+        /* Send Payment Request */
+        $('#subscribeNow').on('click', function (e)
+        {
+            var $form = $('#subscribeForm');
+            $form.find('#subscribeNow').html(LANG_PROCCESSING +' <i class="fa fa-spinner fa-pulse"></i>');
+            e.preventDefault();
+
+            paymentMethod = $('input[name="payment_method_id"]:checked').data("name");
+
+            if (paymentMethod != 'payumoney' || packagePrice <= 0) {
+                return false;
+            }
+            $('#subscribeForm').submit();
+
+            /* Prevent form from submitting */
+            return false;
+        });
+    });
+
+</script>
 
 <script>
     var radios = document.querySelectorAll('.payment-tab-trigger > input.payment_method_id');

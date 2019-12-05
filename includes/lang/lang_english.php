@@ -585,3 +585,11 @@ $lang['PENDING'] = 'Pending';
 $lang['EXPIRE'] = 'Expire';
 $lang['FAILED'] = 'Failed';
 $lang['ENTERVIOL'] = 'Please enter voilation details';
+$lang['LOGIN_CHAT'] = 'Login to chat';
+$lang['CHAT_NOW'] = 'Chat now';
+
+$lang['ABOUT'] = 'About';
+$lang['DETAILS'] = 'Details';
+$lang['INQUIRE_FORM'] = 'Inquire Form';
+$lang['REDIRECT_PAYUMONEY'] = 'You will be redirected to payumoney to complete payment.';
+

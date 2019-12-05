@@ -94,7 +94,7 @@
 
                     <div class="my-quickad section">
                         <h2>{LANG_MY_ADS}</h2>
-                        <table class="manage-table responsive-table">
+                        <table id="js-table-list" class="manage-table responsive-table">
                             <thead>
                                 <tr>
                                     <th><i class="fa fa-file-text"></i> {LANG_ITEM_DETAILS}</th>
@@ -205,30 +205,5 @@
         }
     });
 </script>
-<script>
-    //var LANG_SEARCH = "{LANG_SEARCH}";
 
-    $(document).ready(function () {
-        $('#js-table-list').DataTable({
-            responsive: {
-                details: {
-                    type: 'column'
-                }
-            },
-            "language": {
-                "paginate": {
-                    "previous": "{LANG_PREVIOUS}",
-                    "next": "{LANG_NEXT}"
-                },
-                "search": "{LANG_SEARCH}",
-                "lengthMenu": "{LANG_DISPLAY} _MENU_",
-                "zeroRecords": "{LANG_NO_FOUND}",
-                "info": "{LANG_PAGE} _PAGE_ - _PAGES_",
-                "infoEmpty": "{LANG_NO_RESULT_FOUND}",
-                "infoFiltered": "( {LANG_TOTAL_RECORD} _MAX_)"
-            }
-        });
-    });
-
-</script>
 {OVERALL_FOOTER}

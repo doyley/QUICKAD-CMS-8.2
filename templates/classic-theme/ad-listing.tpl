@@ -7,9 +7,17 @@
             <div class="breadcrumb-section"><!-- breadcrumb -->
                 <ol class="breadcrumb">
                     <li><a href="{LINK_INDEX}"><i class="fa fa-home"></i> {LANG_HOME}</a></li>
-                    <li>{MAINCATEGORY}{SUBCATEGORY}IF("{MAINCATEGORY}{SUBCATEGORY}"==""){ {LANG_ALL_CATEGORIES} {:IF}</li>
-                    <div class="pull-right back-result"><a href="{LINK_INDEX}"><i class="fa fa-angle-double-left"></i>
-                            {LANG_BACK_RESULT}</a>
+                    IF("{MAINCATEGORY}"!=""){ 
+						<li>{MAINCATEGORY} </li>
+                    {:IF}
+                    IF("{SUBCATEGORY}"!=""){ 
+						<li>{SUBCATEGORY} </li>
+                    {:IF}
+                    IF("{MAINCATEGORY}{SUBCATEGORY}"==""){ 
+						<li>{LANG_ALL_CATEGORIES} </li>
+                    {:IF}
+                    
+                    <div class="pull-right back-result"><a href="{LINK_INDEX}"><i class="fa fa-angle-double-left"></i>{LANG_BACK_RESULT}</a>
                     </div>
                 </ol>
                 <!-- breadcrumb -->
@@ -20,8 +28,7 @@
                     <div class="listing-form">
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="dropdown category-dropdown"><a data-toggle="dropdown" href="#"><span
-                                                class="change-text">{LANG_SELECT_CATEGORY}</span><i class="fa fa-navicon"></i></a>
+                                <div class="dropdown category-dropdown"><a data-toggle="dropdown" href="#"><span class="change-text">{LANG_SELECT_CATEGORY}</span><i class="fa fa-navicon"></i></a>
                                     {CAT_DROPDOWN}
                                 </div>
                             </div>
@@ -30,8 +37,7 @@
                                        placeholder="{LANG_WHAT} ?" id="keywords" style="box-shadow: none !important;">
                             </div>
                             <div class="col-md-3 banner-icon"><i class="fa fa-map-marker"></i>
-                                <input type="text" class="form-control location" id="searchStateCity" name="location"
-                                       placeholder="{LANG_WHERE} ?">
+                                <input type="text" class="form-control location" id="searchStateCity" name="location" placeholder="{LANG_WHERE} ?" >
                                 <input type="hidden" name="placetype" id="searchPlaceType" value="">
                                 <input type="hidden" name="placeid" id="searchPlaceId" value="">
                             </div>
@@ -142,18 +148,15 @@
                                 <div class="tab-box ">
                                     <!-- Nav tabs -->
                                     <ul class="nav nav-tabs" id="quick-filter">
-                                        <li role="presentation" IF("{FILTER}"==""){ class="active" {:IF}><a href="#" data-filter-type="filter" data-filter-val="">{LANG_FIND_ADS}
-                                        <span class="badge">{TOTALADSFOUND}</span></a></li>
-                                        <li role="presentation" id="premium_featured" IF("{FILTER}"=="featured"){ class="active" {:IF}><a href="#" data-filter-type="filter" data-filter-val="featured">{LANG_FEATURED}
-                                        <span class="badge"> {FEATUREDFOUND} </span></a></li>
+                                        <li role="presentation" IF("{FILTER}"==""){ class="active" {:IF}><a href="#" data-filter-type="filter" data-filter-val="">{LANG_FIND_ADS}<span class="badge">{TOTALADSFOUND}</span></a></li>
+                                        <li role="presentation" id="premium_featured" IF("{FILTER}"=="featured"){ class="active" {:IF}><a href="#" data-filter-type="filter" data-filter-val="featured">{LANG_FEATURED}<span class="badge"> {FEATUREDFOUND} </span></a></li>
                                         <li role="presentation" id="premium_urgent" IF("{FILTER}"=="urgent"){ class="active" {:IF}><a href="#" data-filter-type="filter" data-filter-val="urgent">{LANG_URGENT}
                                         <span class="badge"> {URGENTFOUND} </span></a></li>
                                         <div class="dropdown pull-right">
                                             <!-- category-change -->
                                             <div class="dropdown category-dropdown">
                                                 <h5>{LANG_SORT_BY}:</h5>
-                                                <a id="sort-dropdown" data-toggle="dropdown" href="#"><span
-                                                        class="change-text">
+                                                <a id="sort-dropdown" data-toggle="dropdown" href="#"><span class="change-text">
                                                         IF("{SORT}"==""){ {LANG_NEWEST} {:IF}
                                                         IF("{SORT}"=="id"){ {LANG_NEWEST} {:IF}
                                                         IF("{SORT}"=="title"){ {LANG_NAME} {:IF}
@@ -222,17 +225,14 @@
                                                             <a href="{ITEM.link}">{ITEM.product_name}</a>
                                                         </h4>
                                                         <ul class="contact-options pull-right" id="set-favorite">
-                                                            <li><a href="#" data-item-id="{ITEM.id}" data-userid="{USER_ID}"
-                                                                   data-action="setFavAd"
-                                                                   class="fav_{ITEM.id} fa fa-heart IF("{ITEM.favorite}"=="1"){ active {:IF}"></a></li>
+                                                            <li><a href="#" data-item-id="{ITEM.id}" data-userid="{USER_ID}" data-action="setFavAd" class='fav_{ITEM.id} fa fa-heart IF("{ITEM.favorite}"=="1"){ active {:IF}'></a></li>
                                                         </ul>
                                                         <ol class="breadcrumb">
                                                             <li><a href="{ITEM.catlink}">{ITEM.category}</a></li>
                                                             <li><a href="{ITEM.subcatlink}">{ITEM.sub_category}</a></li>
                                                         </ol>
                                                         <ul class="item-details">
-                                                            <li><i class="fa fa-map-marker"></i><a href="{ITEM.citylink}">{ITEM.city}</a>
-                                                            </li>
+                                                            <li><i class="fa fa-map-marker"></i><a href="{ITEM.citylink}">{ITEM.city}</a></li>
                                                             <li><i class="fa fa-clock-o"></i>{ITEM.created_at}</li>
                                                         </ul>
                                                         IF("{ITEM.price}"!="0"){ <span class="item-price"> {ITEM.price} </span> {:IF}

@@ -80,6 +80,12 @@ $folder = $info['payment_folder'];
                                         <input name="paypal_api_signature" type="text" class="form-control" placeholder="Enter your Paypal API Secret" value="<?php echo get_option('paypal_api_signature')?>">
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Paypal App Client ID:</label>
+                                    <div class="col-sm-6">
+                                        <input name="paypal_client_id" type="text" class="form-control" placeholder="Enter your Paypal Client ID" value="<?php echo get_option('paypal_client_id')?>">
+                                    </div>
+                                </div>
                             <?php
                             }
                             ?>
@@ -154,6 +160,41 @@ $folder = $info['payment_folder'];
                                     </div>
                                 </div>
                             <?php
+                            }
+                            ?>
+
+                            <?php
+                            if($folder == "payumoney"){
+                                ?>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Live Mode/ Test Mode </label>
+                                    <div class="col-sm-6">
+                                        <select name="payumoney_sandbox_mode"  class="form-control">
+                                            <option value="live" <?php if(get_option('payumoney_sandbox_mode') == 'live') echo "selected"; ?>>Live Mode</option>
+                                            <option value="test" <?php if(get_option('payumoney_sandbox_mode') == 'test') echo "selected"; ?>>Test Mode</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Payumoney Merchant ID:</label>
+                                    <div class="col-sm-6">
+                                        <input name="payumoney_merchant_id" type="text" class="form-control" placeholder="Enter your Payumoney Merchant ID" value="<?php echo get_option('payumoney_merchant_id')?>">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Payumoney Merchant Key:</label>
+                                    <div class="col-sm-6">
+                                        <input name="payumoney_merchant_key" type="text" class="form-control" placeholder="Enter your Payumoney Merchant Key" value="<?php echo get_option('payumoney_merchant_key')?>">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Payumoney Merchant Salt:</label>
+                                    <div class="col-sm-6">
+                                        <input name="payumoney_merchant_salt" type="text" class="form-control" placeholder="Enter your Payumoney Merchant Salt" value="<?php echo get_option('payumoney_merchant_salt')?>">
+                                    </div>
+                                </div>
+
+                                <?php
                             }
                             ?>
 

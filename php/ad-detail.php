@@ -28,14 +28,14 @@ if ($num_rows > 0) {
     $item_featured = $info['featured'];
     $item_urgent = $info['urgent'];
     $item_highlight = $info['highlight'];
-    $item_description = $info['description'];
+    $item_description = stripslashes(nl2br($info['description']));
     $item_tag = $info['tag'];
     $item_location = $info['location'];
     $item_city = get_cityName_by_id($info['city']);
     $item_state = get_stateName_by_id($info['state']);
     $item_country = get_countryName_by_id($info['country']);
 
-    $item_view = $info['view'];
+    $item_view = thousandsCurrencyFormat($info['view']);
     $item_created_at = timeAgo($info['created_at']);
     $item_updated_at = timeago($info['updated_at']);
     $item_catid = $info['category'];
@@ -79,7 +79,7 @@ if ($num_rows > 0) {
     $item_price = $price;
     $item_negotiable = $info['negotiable'];
     if($item_negotiable == 1)
-        $item_negotiable = $lang['NEGOTIABLE_PRICE'];
+        $item_negotiable = $lang['NEGOTIATE'];
     else
         $item_negotiable = "";
 
@@ -103,7 +103,7 @@ if ($num_rows > 0) {
             foreach ($checkbox_value as $val)
             {
                 $val = get_customOption_by_id(trim($val));
-                $checkbox_value2[] = '<div class="col-md-4 col-sm-4"><div style="line-height: 30px;"><i class="fa fa-check"></i> '.$val.'</div></div>';
+                $checkbox_value2[] = '<li class="yes"> '.$val.' </li>';
             }
             if($custom_fields_title != ""){
                 $item_checkbox[$field_id]['title'] = $custom_fields_title;
@@ -185,11 +185,18 @@ if ($num_rows > 0) {
         $main_Screen = $screnshots[0];
         $meta_image = $config['site_url'].'storage/products/'.$main_Screen;
         $screen_sm = explode(',',$info['screen_shot']);
+        $img_count = 0;
+        $item_screenshot = array();
         foreach ($screen_sm as $value)
         {
             //REMOVE SPACE FROM $VALUE ----
             $value = trim($value);
+
+            $item_screenshot[$img_count]['image'] = $value;
+
             $screen_sm2[] = '<div class="item-sm-thumb"><div class="imgAsBg"><img src="'.$config['site_url'].'storage/products/thumb/'.$value.'" alt="'.$item_title.'"></div></div>';
+
+            $img_count++;
         }
         $screen_sm = implode('  ', $screen_sm2);
 
@@ -246,6 +253,7 @@ $country_code = check_user_country();
 $result1 = ORM::for_table($config['db']['pre'].'product')
     ->where(array(
         'status' => 'active',
+        'hide' => '0',
         'category' => $item_catid,
         'country' => $country_code
     ))
@@ -345,6 +353,7 @@ $page->SetParameter ('OVERALL_HEADER', create_header($item_title,$meta_desc,$met
 $page->SetLoop ('ITEM', $item);
 $page->SetParameter ('CAT_DROPDOWN',$cat_dropdown);
 $page->SetLoop ('CATEGORY',$GetCategory);
+$page->SetLoop ('ITEM_SCREENSHOT', $item_screenshot);
 $page->SetParameter ('ITEM_CUSTOMFIELD', $item_custom_field);
 $page->SetLoop ('ITEM_CUSTOM', $item_custom);
 $page->SetLoop ('ITEM_CUSTOM_TEXTAREA', $item_custom_textarea);
@@ -390,6 +399,7 @@ $page->SetParameter ('ITEM_PRICE', $item_price);
 $page->SetParameter ('ITEM_NEGOTIATE', $item_negotiable);
 $page->SetParameter ('ITEM_PHONE', $item_phone);
 $page->SetParameter ('ITEM_HIDE_PHONE', $item_hide_phone);
+$page->SetParameter ('MAIN_SCREEN', $main_Screen);
 $page->SetParameter ('META_IMAGE', $meta_image);
 $page->SetParameter ('ITEM_SCREENS_SM', $screen_sm);
 $page->SetParameter ('ITEM_SCREENS_BIG', $screen_big);

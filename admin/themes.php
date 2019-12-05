@@ -60,7 +60,7 @@ if(isset($_POST['tpl_name']))
         <!-- Partial Table -->
         <div class="card">
             <div class="card-header">
-                <h4>Themes</h4>
+                <h4>Themes <?php echo $config['tpl_name'] ?></h4>
                 <div class="pull-right">
                     <a href="setting.php#quickad_theme_setting" class="btn btn-success waves-effect waves-light m-r-10">Theme setting</a>
                 </div>

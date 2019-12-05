@@ -94,9 +94,7 @@
                     <div class="detail-title">
                         <h2 class="title-left">{ITEM_CUSTOM_CHECKBOX.title}</h2>
                     </div>
-                    <div class="inner row">
-                        {ITEM_CUSTOM_CHECKBOX.value}
-                    </div>
+                    <ul class="amenities">{ITEM_CUSTOM_CHECKBOX.value}</ul>
                 </div>
                 {/LOOP: ITEM_CUSTOM_CHECKBOX}
 
@@ -229,8 +227,11 @@
                     {:IF}
                     <a href="{ITEM_AUTHORLINK}" class="link">{LANG_VIEW_PROFILE}</a>
                     <div style="padding: 10px 0;">
+                        IF("{LOGGED_IN}"=="0"){
+                        <a class="modal-trigger btn btn-warning" href="#loginPopUp"><i class="fa fa-comment-o"></i>{LANG_LOGIN_CHAT}</a>
+                        {:IF}
                         IF("{LOGGED_IN}&{ZECHAT}"=="1&on"){
-                        <a href="#"><button type="button" class="btn btn-warning" href="#" onclick="javascript:chatWith('{ITEM_AUTHORUNAME}','{ITEM_AUTHORIMG}','{ITEM_AUTHORONLINE}')"><i class="fa fa-comment-o"></i> Chat Now</button></a>
+                        <a href="#"><button type="button" class="btn btn-warning" href="#" onclick="javascript:chatWith('{ITEM_AUTHORUNAME}','{ITEM_AUTHORIMG}','{ITEM_AUTHORONLINE}')"><i class="fa fa-comment-o"></i> {LANG_CHAT_NOW}</button></a>
                         {:IF}
 
                         <a href="#send-message"><button type="button" class="btn btn-primary">{LANG_REPLY_MAIL}</button></a>

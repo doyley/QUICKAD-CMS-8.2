@@ -205,3 +205,33 @@
     1. Success : array
 
     */
+
+    Check this demo link
+
+    https://freelancer.bylancer.com
+
+    Freelancer Login
+
+    Username : beenny
+    Password : 123456
+
+    Employer Login
+
+    Username : Merree
+    Password : 123456
+
+    Admin Panel
+
+    https://freelancer.bylancer.com/adm
+
+        Old admin theme
+
+        Username : admin
+        Password : admin
+
+    https://freelancer.bylancer.com/admin
+
+        New admin theme
+
+        Username : admin
+        Password : admin

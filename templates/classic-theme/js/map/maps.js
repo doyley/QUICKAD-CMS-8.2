@@ -891,26 +891,36 @@ function getcityStateOnDrag(latitude,longitude){
 
                 if(compIsType(t, 'locality')){
                     city = a[i].long_name; //store the city
-                    $('#locality').val(city);
+					if(city != ""){
+						$('#locality').val(city);
+					}
                 }
 
                 if(compIsType(t, 'administrative_area_level_2')){
                     adminal2 = a[i].long_name; //store the state
-                    $('#administrative_area_level_2').val(adminal2);
+					if(adminal2 != ""){
+						$('#administrative_area_level_2').val(adminal2);
+					}
                 }
                 if(compIsType(t, 'administrative_area_level_1')){
                     state = a[i].long_name; //store the state
-                    $('#administrative_area_level_1').val(state);
+					if(state != ""){
+						$('#administrative_area_level_1').val(state);
+					}
                 }
 
                 if(compIsType(t, 'country')){
                     country = a[i].long_name; //store the state
-                    $('#country-input').val(country);
+					if(country != ""){
+						$('#country-input').val(country);
+					}
                 }
 
                 if(adminal2 != null && state != null && country != null){
                     address = adminal2+", "+state+", "+country; //store the state
-                    $('#address-autocomplete').val(address);
+					if(address != ""){
+						$('#address-autocomplete').val(address);
+					}
                 }
             }
 
@@ -923,7 +933,7 @@ function getcityStateOnDrag(latitude,longitude){
             }
         }
         else{
-            document.getElementById("address-autocomplete").value = '';
+            //document.getElementById("address-autocomplete").value = '';
             console.log("address_components not found");
         }
     });

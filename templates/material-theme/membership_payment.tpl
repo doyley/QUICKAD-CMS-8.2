@@ -53,7 +53,21 @@
                                     </div>
 
                                 {:IF}
+                                    IF("{PAYMENT_TYPES.folder}"=="payumoney"){
+                                    <!-- Payumoney -->
+                                    <div class="payment-tab">
+                                        <div class="payment-tab-trigger">
+                                            <input name="payment_method_id" class="payment_method_id" id="{PAYMENT_TYPES.folder}" type="radio" value="{PAYMENT_TYPES.id}" data-name="payumoney">
+                                            <label for="{PAYMENT_TYPES.folder}">{PAYMENT_TYPES.title}</label>
+                                            <img class="payment-logo {PAYMENT_TYPES.folder}" src="{SITE_URL}storage/payments/{PAYMENT_TYPES.folder}/logo.png" alt="">
+                                        </div>
 
+                                        <div class="payment-tab-content">
+                                            <p>{LANG_REDIRECT_PAYUMONEY}</p>
+                                        </div>
+                                    </div>
+                                    <!-- Payumoney -->
+                                {:IF}
                                     <!-- Stripe Payment Method Check -->
                                     IF("{PAYMENT_TYPES.folder}"=="stripe"){
 
@@ -934,6 +948,37 @@
 </script>
 
 
+<!-- payumoney Payment Method Check -->
+<script>
+
+    $(document).ready(function ()
+    {
+        var paymentMethod = $('input[name="payment_method_id"]:checked').data("name");
+
+        $('.payment_method_id').on('change', function () {
+            paymentMethod = $(this).data('name');
+        });
+
+        /* Send Payment Request */
+        $('#subscribeNow').on('click', function (e)
+        {
+            var $form = $('#subscribeForm');
+            $form.find('#subscribeNow').html(LANG_PROCCESSING +' <i class="fa fa-spinner fa-pulse"></i>');
+            e.preventDefault();
+
+            paymentMethod = $('input[name="payment_method_id"]:checked').data("name");
+
+            if (paymentMethod != 'payumoney' || packagePrice <= 0) {
+                return false;
+            }
+            $('#subscribeForm').submit();
+
+            /* Prevent form from submitting */
+            return false;
+        });
+    });
+
+</script>
 
 <script>
     var radios = document.querySelectorAll('.payment-tab-trigger > input.payment_method_id');

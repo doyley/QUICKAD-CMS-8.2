@@ -31,7 +31,6 @@ $lang['ADVERTISE_WITH_US'] = 'Werben Sie mit uns';
 $lang['ADVWEBSITE'] = 'Werbung für eine andere Website';
 $lang['AD_DELETED'] = 'El anuncio ha sido eliminado';
 $lang['AD_DESCRIPTION'] = 'Erzählen Sie uns mehr über Ihre Werbung';
-$lang['AD_EXP_DAY'] = 'Días de vencimiento del anuncio';
 $lang['AD_EXP_IN'] = 'Vencimiento de anuncio en';
 $lang['AD_POST'] = 'Publicación de anuncio';
 $lang['AD_UPLOADED_SUCCESS'] = 'Die Anzeige wurde erfolgreich hochgeladen';

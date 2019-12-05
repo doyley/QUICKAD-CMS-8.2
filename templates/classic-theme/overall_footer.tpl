@@ -1,5 +1,5 @@
 <!-- footer -->
-<div class="footer-section">
+<div class="footer-section hidden-xs">
     <div class="container">
         <div class="row"><!--About Us-->
             <div class="col-md-4 col-sm-12">
@@ -99,11 +99,9 @@ IF("{SWITCHER}"=="1"){
                     aria-expanded="false"><span id="selected_theme">Classic</span><span class="caret"></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
-                <li role="presentation" data-theme="classic-theme"><a role="menuitem" tabindex="-1" rel="alternate"
-                                                                      href="#">Classic Theme</a></li>
-                <li role="presentation" data-theme="material-theme"><a role="menuitem" tabindex="-1" rel="alternate"
-                                                                       href="#">Material Theme</a></li>
-
+                <li role="presentation" data-theme="classic-theme"><a role="menuitem" tabindex="-1" rel="alternate" href="#">Classic Theme</a></li>
+                <li role="presentation" data-theme="material-theme"><a role="menuitem" tabindex="-1" rel="alternate" href="#">Material Theme</a></li>
+                <li role="presentation" data-theme="explore-theme"><a role="menuitem" tabindex="-1" rel="alternate" href="#">Explore Theme</a></li>
             </ul>
         </div>
 
@@ -143,11 +141,10 @@ IF("{SWITCHER}"=="1"){
     var LANG_REMOVE_FAV = "{LANG_REMOVE_FAVOURITE}";
     var LANG_SELECT_CITY = "{LANG_SELECT_CITY}";
 </script>
-<!-- JS -->
 <script src="{SITE_URL}templates/{TPL_NAME}/js/modernizr.min.js"></script>
 <script src="{SITE_URL}templates/{TPL_NAME}/js/bootstrap.min.js"></script>
 <script src="{SITE_URL}templates/{TPL_NAME}/js/owl.carousel.min.js"></script>
-<script src="{SITE_URL}templates/{TPL_NAME}/js/scrollup.min.js"></script>
+<script src="{SITE_URL}templates/{TPL_NAME}/js/scrollup.min.js"></script> 
 <script src="{SITE_URL}templates/{TPL_NAME}/js/jquery.nicescroll.min.js"></script>
 <script src='{SITE_URL}templates/{TPL_NAME}/js/custom2.js' type='text/javascript'></script>
 <script src="{SITE_URL}templates/{TPL_NAME}/js/custom.js"></script>
@@ -155,9 +152,9 @@ IF("{SWITCHER}"=="1"){
 <script src="{SITE_URL}templates/{TPL_NAME}/js/sweetalert/sweetalert.min.js"></script>
 <script src="{SITE_URL}templates/{TPL_NAME}/js/sweetalert/jquery.sweet-alert.custom.js"></script>
 <script src='{SITE_URL}templates/{TPL_NAME}/js/user-ajax.js'></script>
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 <script>
+
     /* THIS PORTION OF CODE IS ONLY EXECUTED WHEN THE USER THE LANGUAGE & THEME(CLIENT-SIDE) */
     $(function () {
         $('#lang-dropdown').on('click', '.dropdown-menu li', function (e) {
@@ -222,10 +219,8 @@ IF("{LOGGED_IN}&{ZECHAT}"=="1&on"){
 <script type="text/javascript" src="{SITE_URL}plugins/zechat/app/includes/chatjs/lightbox.js"></script>
 <script type="text/javascript" src="{SITE_URL}plugins/zechat/app/includes/chatjs/chat.js"></script>
 <script type="text/javascript" src="{SITE_URL}plugins/zechat/app/includes/chatjs/custom.js"></script>
-<script type="text/javascript"
-        src="{SITE_URL}plugins/zechat/app/plugins/uploader/plupload.full.min.js"></script>
-<script type="text/javascript"
-        src="{SITE_URL}plugins/zechat/app/plugins/uploader/jquery.ui.plupload/jquery.ui.plupload.js"></script>
+<script type="text/javascript" src="{SITE_URL}plugins/zechat/app/plugins/uploader/plupload.full.min.js"></script>
+<script type="text/javascript" src="{SITE_URL}plugins/zechat/app/plugins/uploader/jquery.ui.plupload/jquery.ui.plupload.js"></script>
 <!--\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ZeChat Required Files Included\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-->
 
 
@@ -244,5 +239,4 @@ IF("{LOGGED_IN}&{ZECHAT}"=="1&on"){
 {:IF}
 <!--\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ZeChat Contact List View Included\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-->
 
-</div>
 </body></html>

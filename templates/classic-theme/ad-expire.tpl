@@ -1,7 +1,9 @@
-{OVERALL_HEADER}<!-- Pending-ads-page -->
+{OVERALL_HEADER}
+<!-- Expire-ads-page -->
 <section id="main" class="clearfix myads-page">
     <div class="container">
-        <div class="breadcrumb-section"><!-- breadcrumb -->
+        <div class="breadcrumb-section">
+            <!-- breadcrumb -->
             <ol class="breadcrumb">
                 <li><a href="{LINK_INDEX}"><i class="fa fa-home"></i> {LANG_HOME}</a></li>
                 <li class="active">{LANG_EXPIRE_ADS}</li>

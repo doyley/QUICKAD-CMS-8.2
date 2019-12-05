@@ -8,13 +8,12 @@ if(!checkloggedin()){
     exit();
 }
 
+
 $action = isset($_POST['action']) ? $_POST['action'] : (isset($_GET['action']) ? $_GET['action'] : '');
 
 // manually set action for paypal payments
-if(isset($access_token)){
-    if (empty($action) && isset($_SESSION['quickad'][$access_token]['payment_type'])) {
-        $action = 'stripe_payment_process';
-    }
+if (empty($action) && isset($_SESSION['quickad'][$access_token]['payment_type'])) {
+    $action = 'stripe_payment_process';
 }
 
 $pmt_stripe_secret_key = get_option('stripe_secret_key');
@@ -23,7 +22,7 @@ if ( !empty($action) ) {
 
     switch ($action) {
 
-/***********************************************************************************************************************/
+        /***********************************************************************************************************************/
 
         case 'stripe_payment_process':
 
@@ -104,16 +103,8 @@ if ( !empty($action) ) {
                         $plan_id = $plan->id;
                     }
 
-                    // create the customer
-                    $customer = Stripe\Customer::create(array(
-                        'description' => $_SESSION['user']['username'],
-                    ));
-
-
 
                     /*Success*/
-
-
                     $pdo = ORM::get_db();
                     $title = $_SESSION['quickad'][$access_token]['name'];
                     $amount = $_SESSION['quickad'][$access_token]['amount'];
@@ -130,7 +121,7 @@ if ( !empty($action) ) {
                         $subsc_details = ORM::for_table($config['db']['pre'].'subscriptions')
                             ->where('sub_id', $subcription_id)
                             ->find_one();
-                        if(!empty($subsc_details)){
+                        if (count($subsc_details) > 0) {
                             // output data of each row
 
                             $term = 0;
@@ -172,13 +163,22 @@ if ( !empty($action) ) {
                             if($txn_type == 'subscr_update')
                             {
                                 $info = ORM::for_table($config['db']['pre'].'upgrades')
-                                    ->select('stripe_subscription_id')
+                                    ->select_many('stripe_customer_id','stripe_subscription_id')
                                     ->where('user_id', $user_id)
                                     ->find_one();
 
+                                $cus_id = $info['stripe_customer_id'];
                                 $id = $info['stripe_subscription_id'];
-                                // Update Subscription
 
+                                //Update Customer
+                                \Stripe\Customer::update($cus_id,
+                                    [
+                                        'description' => $_SESSION['user']['username']
+                                    ]
+                                );
+
+
+                                // Update Subscription
                                 $subscription_s = \Stripe\Subscription::retrieve($id);
                                 \Stripe\Subscription::update($id, [
                                     'cancel_at_period_end' => false,
@@ -206,6 +206,18 @@ if ( !empty($action) ) {
                             }
                             elseif($txn_type == 'subscr_signup')
                             {
+                                //Create a Customer
+                                $userdata = get_user_data($_SESSION['user']['username']);
+                                $name = $userdata['name'];
+                                $email = $userdata['email'];
+                                $address = $userdata['address'];
+                                $vat = $userdata['vat'];
+                                $customer = Stripe\Customer::create(array(
+                                    'name' => $name,
+                                    'email' => $email,
+                                    'description' => $_SESSION['user']['username']
+                                ));
+
                                 // create the subscription
                                 $subscription_s = $customer->subscriptions->create(array(
                                     'plan' => $plan_id,
@@ -321,7 +333,7 @@ if ( !empty($action) ) {
 
             exit;
 
-/***********************************************************************************************************************/
+        /***********************************************************************************************************************/
 
         case 'cancel_auto_renew':
             try{
@@ -360,7 +372,7 @@ if ( !empty($action) ) {
                 error($lang['INVALID_TRANSACTION'], __LINE__, __FILE__, 1);
                 exit();
             }
-        break;
+            break;
 
 
         /***********************************************************************************************************************/

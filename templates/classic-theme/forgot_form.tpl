@@ -1,5 +1,5 @@
 {OVERALL_HEADER}
-<!-- signin-page -->
+<!-- forgot-page -->
 <section id="main" class="clearfix user-page">
     <div class="container">
         <div class="row text-center">
@@ -19,13 +19,13 @@
                     {:IF}
 
                     IF("{LOGIN_ERROR}"!=""){
-                    <article class="byMsg byMsgError" id="formErrors" style="width:92%">! {LOGIN_ERROR}</article>
+                    <article class="byMsg byMsgError" id="formErrors">! {LOGIN_ERROR}</article>
                     {:IF}
 
                     <!-- form -->
                     <form method="post">
                         <div class="form-group">
-                            <input type="email" class="form-control" placeholder="Email" name="email" required="required">
+                            <input type="email" class="form-control" placeholder="{LANG_EMAILAD}" name="email" required="required">
                         </div>
                         <button type="submit" name="Submit" id="submit" class="btn ">{LANG_REQ_PASS}</button>
                         &nbsp;&nbsp;

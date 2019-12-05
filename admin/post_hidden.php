@@ -16,7 +16,7 @@ include("header.php");
             </div>
             <div class="card-block">
                 <div id="js-table-list">
-                    <table class="js-table-checkable table table-vcenter table-hover" id="ajax_datatable" data-jsonfile="post.php?status=hide">
+                    <table class="js-table-checkable table table-vcenter table-hover" id="ajax_datatable" data-jsonfile="post.php?hide=1">
                         <thead>
                         <tr>
                             <th class="text-center w-5 sortingNone">

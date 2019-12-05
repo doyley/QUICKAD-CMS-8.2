@@ -138,7 +138,6 @@ IF("{SWITCHER}"=="1"){
             <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
                 <li role="presentation" data-theme="classic-theme"><a role="menuitem" tabindex="-1" rel="alternate" href="#">Classic Theme</a></li>
                 <li role="presentation" data-theme="material-theme"><a role="menuitem" tabindex="-1" rel="alternate" href="#">Material Theme</a></li>
-
             </ul>
         </div>
 
@@ -153,6 +152,7 @@ IF("{SWITCHER}"=="1"){
 <script>
     // Language Var
     var LANG_ENABLE_CHAT_YOURSELF = "{LANG_ENABLE_CHAT_YOURSELF}";
+    var LANG_JUST_NOW = "{LANG_JUST_NOW}";
     var LANG_PREVIEW = "{LANG_PREVIEW}";
     var LANG_SEND = "{LANG_SEND}";
     var LANG_FILENAME = "{LANG_FILENAME}";

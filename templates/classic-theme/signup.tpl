@@ -2,7 +2,8 @@
 <!-- signup-page -->
 <section id="main" class="clearfix user-page">
     <div class="container">
-        <div class="row text-center"><!-- user-login -->
+        <div class="row text-center">
+            <!-- user-login -->
             <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
                 <div class="user-account">
                     <h2>{LANG_CREATE_AN_ACCOUNT}</h2>

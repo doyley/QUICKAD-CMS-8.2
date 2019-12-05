@@ -98,16 +98,26 @@
                             <!-- Tab panes -->
                             <div class="tab-content">
                                 <div class="tab-pane active" id="tab-details">
-                                    IF("{ITEM_CUSTOMFIELD}"!="0"){
                                     <div class="quick-info">
                                         <div class="detail-title"><h2 class="title-left">{LANG_ADDITIONAL_DETAILS}</h2></div>
                                         <ul class="clearfix">
+                                            <li><div class="inner clearfix"><span class="label">{LANG_AD_ID}</span><span class="desc">{ITEM_ID}</span></div></li>
+                                            <li><div class="inner clearfix"><span class="label">{LANG_POSTED_ON}</span><span class="desc">{ITEM_CREATED}</span></div></li>
+                                            <li><div class="inner clearfix"><span class="label">{LANG_AD_VIEWS}</span><span class="desc">{ITEM_VIEW}</span></div></li>
+                                            IF("{ITEM_PRICE}"!="0"){
+                                            <li><div class="inner clearfix"><span class="label">{LANG_PRICE}</span><span class="desc">{ITEM_PRICE} {ITEM_NEGOTIATE}</span></div></li>
+                                            {:IF}
+
+
+                                            IF("{ITEM_CUSTOMFIELD}"!="0"){
+
                                             {LOOP: ITEM_CUSTOM}
                                                 <li><div class="inner clearfix"><span class="label">{ITEM_CUSTOM.title}</span><span class="desc">{ITEM_CUSTOM.value}</span></div></li>
                                             {/LOOP: ITEM_CUSTOM}
+
+                                            {:IF}
                                         </ul>
                                     </div>
-                                    {:IF}
                                     {LOOP: ITEM_CUSTOM_TEXTAREA}
                                         <div class="text-widget">
                                             <div class="detail-title"><h2 class="title-left">{ITEM_CUSTOM_TEXTAREA.title}</h2></div>
@@ -115,10 +125,11 @@
                                         </div>
                                     {/LOOP: ITEM_CUSTOM_TEXTAREA}
 
+
                                     {LOOP: ITEM_CUSTOM_CHECKBOX}
                                         <div class="text-widget">
                                             <div class="detail-title"><h2 class="title-left">{ITEM_CUSTOM_CHECKBOX.title}</h2></div>
-                                            <div class="inner row">{ITEM_CUSTOM_CHECKBOX.value}</div>
+                                            <ul class="amenities">{ITEM_CUSTOM_CHECKBOX.value}</ul>
                                         </div>
                                     {/LOOP: ITEM_CUSTOM_CHECKBOX}
 
@@ -137,9 +148,12 @@
                                     </div>
                                     {:IF}
 
-                                    <div class="description">
+                                    <div class="description IF("{POST_ADDRESS_MODE}"!="1"){ hidden {:IF}">
                                         <div class="detail-title"><h2 class="title-left">{LANG_LOCATION}</h2></div>
-                                        <div><div class="map-widget map height-200px" id="map-detail"></div></div>
+                                        <div>
+                                            <div class="map-widget map height-200px" id="map-detail"></div>
+                                            <br><span><a href="https://maps.google.com/?q={ITEM_LOCATION}" target="_blank" rel="nofollow">{ITEM_LOCATION}</a></span>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -187,7 +201,7 @@
                                 <!-- short-info -->
                                 <div class="user-info ">
                                     <div class="profile-picture">
-                                        <img width="70px" style="min-height:73px" src="{SITE_URL}storage/profile/{ITEM_AUTHORIMG}" alt="{ITEM_AUTHORUNAME}">
+                                        <img width="70px" style="min-height:73px" src="{SITE_URL}storage/profile/small_{ITEM_AUTHORIMG}" alt="{ITEM_AUTHORUNAME}">
                                     </div>
                                     <h4><a href="{ITEM_AUTHORLINK}"> {ITEM_AUTHORNAME} IF("{ITEM_AUTHORNAME}"==""){ {ITEM_AUTHORUNAME} {:IF}</a>
                                         IF("{SUB_IMAGE}"!=""){
@@ -204,10 +218,10 @@
                                 <!-- contact-advertiser -->
                                 <div class="contact-advertiser">
                                     IF("{LOGGED_IN}"=="0"){
-                                    <a class="modal-trigger btn btn-warning" href="#loginPopUp"><i class="fa fa-comment-o"></i>Login to Chat</a>
+                                    <a class="modal-trigger btn btn-warning" href="#loginPopUp"><i class="fa fa-comment-o"></i>{LANG_LOGIN_CHAT}</a>
                                     {:IF}
                                     IF("{LOGGED_IN}&{ZECHAT}"=="1&on"){
-                                    <a href="#"><button type="button" class="btn btn-warning" href="#" onclick="javascript:chatWith('{ITEM_AUTHORUNAME}','{ITEM_AUTHORIMG}','{ITEM_AUTHORONLINE}')"><i class="fa fa-comment-o"></i> Chat Now</button></a>
+                                    <a href="#"><button type="button" class="btn btn-warning" href="#" onclick="javascript:chatWith('{ITEM_AUTHORUNAME}','{ITEM_AUTHORIMG}','{ITEM_AUTHORONLINE}')"><i class="fa fa-comment-o"></i> {LANG_CHAT_NOW}</button></a>
                                     {:IF}
                                     <a href="#" class="btn btn-info" data-toggle="modal" data-target="#emailToSeller"><i class="fa fa-envelope"></i>{LANG_REPLY_MAIL}</a>
                                 </div>
@@ -242,8 +256,7 @@
                                     <h4>{LANG_MORE_INFO}</h4>
                                     <!-- social-icon -->
                                     <ul id="set-favorite">
-                                        <li><a href="#" data-item-id="{ITEM_ID}" data-userid="{USER_ID}" data-action="setFavAd" class="fav_{ITEM_ID} fa fa-heart IF("
-                                            {ITEM_FAVORITE}"=="1"){ active {:IF}"><span style="font-family: 'Open Sans', sans-serif;color: #707070;font-size: 15px;">{LANG_SAVE_AS_FAVOURITE}</span></a>
+                                        <li><a href="#" data-item-id="{ITEM_ID}" data-userid="{USER_ID}" data-action="setFavAd" class="fav_{ITEM_ID} fa fa-heart IF("{ITEM_FAVORITE}"=="1"){ active {:IF}"><span style="font-family: 'Open Sans', sans-serif;color: #707070;font-size: 15px;">{LANG_SAVE_AS_FAVOURITE}</span></a>
                                         </li>
                                     </ul>
                                     <ul>
@@ -287,7 +300,7 @@
                         <!-- item-image -->
                         <div class="item-image-box">
                             <div class="item-image">
-                                <a href="{ITEM.link}"><img src="{SITE_URL}storage/products/{ITEM.picture}" alt="{ITEM.product_name}" class="img-responsive"></a>
+                                <a href="{ITEM.link}"><img src="{SITE_URL}storage/products/thumb/{ITEM.picture}" alt="{ITEM.product_name}" class="img-responsive"></a>
                                 <div class="item-badges">
                                     IF("{ITEM.featured}"=="1"){ <span class="featured">{LANG_FEATURED}</span> {:IF}
                                     IF("{ITEM.urgent}"=="1"){ <span>{LANG_URGENT}</span> {:IF}
@@ -332,7 +345,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">{LANG_SEND-MAIL} {LANG_TO} {ITEM_AUTHORUNAME}</h4>
+                <h4 class="modal-title">{LANG_SEND_MAIL} {LANG_TO} {ITEM_AUTHORUNAME}</h4>
             </div>
             <div class="modal-body">
                 <div class="alert alert-success" id="email_success" style="display: none">
@@ -342,9 +355,9 @@
                 <div class="feed-back-form">
                     <form method="post" id="email_contact_seller" action="email_contact_seller">
                         <div id="post_loading" class="loader" style="display: none;margin: 0 auto;"></div>
-                        <input type="text" class="form-control" name="name" placeholder="Full Name" required="" style="width: 100%">
-                        <input type="text" class="form-control" name="email" placeholder="Email" required="" style="width: 100%">
-                        <input type="text" class="form-control" name="phone" placeholder="Phone No" style="width: 100%">
+                        <input type="text" class="form-control" name="name" placeholder="{LANG_FULL_NAME}" required="" style="width: 100%">
+                        <input type="text" class="form-control" name="email" placeholder="{LANG_EMAILAD}" required="" style="width: 100%">
+                        <input type="text" class="form-control" name="phone" placeholder="{LANG_PHONE_NO}" style="width: 100%">
                         <!---728x90--->
                         <span>{LANG_MESSAGE} ?</span>
                         <textarea type="text" class="form-control" name="message" placeholder="{LANG_ENTER_YOUR_MESSAGE}..." required="" rows="2" style="width: 100%;height: 100px"></textarea>

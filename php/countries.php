@@ -15,7 +15,7 @@ foreach ($row as $info)
     $countrylang = getLangFromCountry($info['languages']);
     $countries[$count]['tpl'] = "";
     if($count == 1 or $count == $col){
-        $countries[$count]['tpl'] .= '<ul class="flag-list col-xs-3 ">';
+        $countries[$count]['tpl'] .= '<ul class="flag-list col-xl-3">';
         $checkEnd = $count+$divide-1;
         $col = $count+$divide;
         //echo "Start : ".$divide."<br>";

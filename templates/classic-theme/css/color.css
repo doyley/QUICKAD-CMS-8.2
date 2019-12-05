@@ -3,3 +3,4 @@
 #scrollEnabling.enabled,#scrollEnabling:hover,.custom-zoom-in:hover,.custom-zoom-out:hover,.label.label-default,.map .cluster>div,.map .cluster>div:after,.map .marker .marker-wrapper .pin:before,.map .marker .marker-wrapper:before{background-color:var(--theme-color)}.custom-zoom-in:hover:before,.custom-zoom-out:hover:before{-webkit-text-stroke:1px var(--theme-color)}.map .cluster>div,.map .cluster>div:after{border:2px solid var(--theme-color)}.map .marker .marker-wrapper .pin,.map .marker .marker-wrapper .pin:before{border:4px solid var(--theme-color)}.map .marker .marker-wrapper .pin .image:after{border-color:var(--theme-color) transparent transparent}
 /*******==============Map-Marker.css=======**********/
 .load-wrapp .wrap ul.dots-box li.dot span {background: var(--theme-color)}
+.amenities li.yes:before {color: var(--theme-color);}

@@ -2,7 +2,6 @@
 require_once('includes.php');
 require_once('../includes/classes/GoogleTranslate.php');
 
-
 $filePath = '';
 if(isset($_GET['file'])){
     $info = ORM::for_table($config['db']['pre'].'languages')
@@ -21,7 +20,7 @@ if(file_exists($filePath)){
     $new_lang = $lang;
 }
 else{
-    header("Location: 404.php");
+    echo '<script>window.location="404.php"</script>';
     exit;
 }
 
@@ -60,7 +59,8 @@ if(isset($_POST['refresh'])) {
 
     } else {
 
-        require_once('../includes/lang/lang_'.$config['lang'].'.php');
+        $lang = array();
+        include('../includes/lang/lang_'.$config['lang'].'.php');
         $english_lang = array();
         $english_lang = $lang;
 

@@ -38,6 +38,13 @@
 <link rel="stylesheet" href="{SITE_URL}plugins/wchat/plugins/uploader/jquery.ui.plupload/css/jquery.ui.plupload.css" type="text/css" />
 <!--File Uploader css-->
 
+<style>
+    #wchat { position: relative;height: 545px; }
+    @media (max-width:479px){
+        #header,#f-text{display: none}
+        #wchat {position: absolute;height: 100%;}
+    }
+</style>
 <!-- Preloader -->
 <div class="preloader">
   <div class="cssload-speeding-wheel"></div>

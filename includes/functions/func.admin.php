@@ -1,13 +1,13 @@
 <?php
 function check_allow()
 {
-    if(isset($_SESSION['admin']['id']) && $_SESSION['admin']['id'] == 1)
+    if(isset($_SESSION['admin']['permission']) && $_SESSION['admin']['permission'] == 1)
     {
         return TRUE;
     }
     else
     {
-        return TRUE;
+        return FALSE;
     }
 }
 
@@ -119,7 +119,7 @@ function adminlogin($email,$password){
     }
 
     // Using prepared statements means that SQL injection is not possible.
-    $sql = "SELECT id, username, password_hash 
+    $sql = "SELECT id, username, password_hash, permission 
         FROM `".$config['db']['pre']."admins`
         $where
         LIMIT 1";
@@ -129,7 +129,7 @@ function adminlogin($email,$password){
         $stmt->store_result();
 
         // get variables from result.
-        $stmt->bind_result($user_id, $username, $db_password);
+        $stmt->bind_result($user_id, $username, $db_password, $permission);
         $stmt->fetch();
 
         if ($stmt->num_rows == 1) {
@@ -148,6 +148,8 @@ function adminlogin($email,$password){
                 $username = preg_replace("/[^a-zA-Z0-9_\-]+/", "", $user_id); // XSS protection as we might print this value
                 $_SESSION['admin']['username'] = $username;
                 $_SESSION['admin']['login_string'] = hash('sha512', $db_password . $user_browser);
+
+                $_SESSION['admin']['permission']  = $permission;
 
                 return true;
 
@@ -262,7 +264,7 @@ function transaction_success($transaction_id){
                 exit('error, user does not exist');
             }
 
-            $subsc_check = mysqli_num_rows(mysqli_query($mysqli,"select * from `".$config['db']['pre']."upgrades` WHERE `user_id` = '".validate_input($user_id)."' LIMIT 1 ;"));
+            $subsc_check = mysqli_num_rows(mysqli_query($mysqli,"select * from `".$config['db']['pre']."upgrades` WHERE `user_id` = '".validate_input($user_id)."' LIMIT 1 "));
 
             if($subsc_check == 1)
             {

@@ -550,17 +550,7 @@ $lang['YOUR_CITY'] = 'Sizin şehriniz';
 $lang['YOU_WANT_DELETE'] = 'Bu Reklamı silmek istiyormusunuz?';
 $lang['YUSERNAME'] = 'Sizin isminiz';
 $lang['ZIPCODE'] = 'Posta kodu';
-
-$lang['UE_OCCUPIED'] = 'Kullanıcı adı veya e-posta adresi zaten dolu';
-$lang['ERROR_WEFIX'] = 'Bir şeyler ters gitti, en kısa sürede düzeltmek için üzerinde çalışıyoruz';
-$lang['CHECK_CONNECTION'] = 'Lütfen internet bağlantınızı kontrol edin';
-$lang['OWNTSHARE_EMAIL'] = 'Sahibin e-posta kimliğini paylaşmadığı görülüyor';
-$lang['INT_YR_PROPERTY'] = 'Mülkünle ilgileniyorum';
-$lang['CAN_DISCUSS'] = 'Üzerinde tartışma yapabiliriz';
-$lang['REGARDS'] = 'Saygılar';
-$lang['CANCEL_FBLOGIN'] = 'Facebook girişini iptal ettiniz, lütfen devam etmek için giriş yapın';
 $lang['CONFIRM'] = 'Onayla';
-$lang['OFFER_SUBMITTED'] = 'Teklifin sahibine gönderildi';
 $lang['CLASSIFIEDS'] = 'İlanlar';
 $lang['MAKE_OFFER'] = 'Teklif Yap';
 $lang['SELLER_ASK_PRICE'] = 'Satıcı fiyat teklifi';

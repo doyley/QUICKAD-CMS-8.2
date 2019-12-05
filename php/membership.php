@@ -199,7 +199,7 @@ if(checkloggedin())
                 $sub_types[$info['sub_id']]['recommended'] = $info['recommended'];
                 $sub_types[$info['sub_id']]['cost'] = $info['sub_amount'];
                 $sub_types[$info['sub_id']]['pay_mode'] = $info['pay_mode'];
-
+                $sub_types[$info['sub_id']]['image'] = $info['sub_image'];
                 $info2 = ORM::for_table($config['db']['pre'].'usergroups')
                     ->where('group_id', $info['group_id'])
                     ->find_one();
@@ -251,6 +251,9 @@ if(checkloggedin())
         }
 		else
 		{
+            $ses_userdata = get_user_data($_SESSION['user']['username']);
+            $author_image = $ses_userdata['image'];
+
             $info = ORM::for_table($config['db']['pre'].'upgrades')
                 ->where('user_id', $_SESSION['user']['id'])
                 ->find_one();
@@ -310,6 +313,10 @@ if(checkloggedin())
             $page->SetParameter ('FAVORITEADS', favorite_ads_count($_SESSION['user']['id']));
             $page->SetParameter ('EXPIREADS', expire_ads_count($_SESSION['user']['id']));
             $page->SetParameter ('RESUBMITADS', resubmited_ads_count($_SESSION['user']['id']));
+
+            $page->SetParameter ('AUTHORUNAME', ucfirst($ses_userdata['username']));
+            $page->SetParameter ('AUTHORNAME', ucfirst($ses_userdata['name']));
+            $page->SetParameter ('AUTHORIMG', $author_image);
 			$page->SetParameter ('OVERALL_FOOTER', create_footer());
 			$page->CreatePageEcho();
 			exit;
@@ -330,6 +337,7 @@ if(checkloggedin())
             $sub_types[$info['sub_id']]['recommended'] = $info['recommended'];
             $sub_types[$info['sub_id']]['cost'] = $info['sub_amount'];
             $sub_types[$info['sub_id']]['pay_mode'] = $info['pay_mode'];
+            $sub_types[$info['sub_id']]['image'] = $info['sub_image'];
 
             if($info['sub_term'] == 'DAILY')
             {

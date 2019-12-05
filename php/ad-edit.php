@@ -105,14 +105,14 @@ function ajax_edit_advertise(){
             if (checkloggedin()) {
                 $price = $_POST['price'];
                 $phone = $_POST['phone'];
-                $price = isset($_POST['price']) ? $_POST['price'] : 0;
-                $phone = isset($_POST['phone']) ? $_POST['phone'] : 0;
+                $price = isset($_POST['price']) ? $_POST['price'] : '0';
+                $phone = isset($_POST['phone']) ? $_POST['phone'] : '0';
 
                 if(empty($_POST['price'])){
                     $price = 0;
                 }
-                $negotiable = isset($_POST['negotiable']) ? 1 : 0;
-                $hide_phone = isset($_POST['hide_phone']) ? 1 : 0;
+                $negotiable = isset($_POST['negotiable']) ? '1' : '0';
+                $hide_phone = isset($_POST['hide_phone']) ? '1' : '0';
                 $cityid = $_POST['city'];
 
                 if($config['post_desc_editor'] == 1)
@@ -137,7 +137,9 @@ function ajax_edit_advertise(){
                 $mapLat = $_POST['latitude'];
                 $mapLong = $_POST['longitude'];
                 $latlong = $mapLat . "," . $mapLong;
-                $slug = create_post_slug($_POST['title']);
+
+                $post_title = removeEmailAndPhoneFromString($_POST['title']);
+                $slug = create_post_slug($post_title);
 
                 $info = ORM::for_table($config['db']['pre'].'product')
                     ->select_many('status', 'screen_shot')
@@ -149,7 +151,7 @@ function ajax_edit_advertise(){
                 if($item_status == "pending" or $config['post_auto_approve'] == 1)
                 {
                     $item_edit = ORM::for_table($config['db']['pre'].'product')->find_one($_POST['product_id']);
-                    $item_edit->set('product_name', $_POST['title']);
+                    $item_edit->set('product_name', $post_title);
                     $item_edit->set('slug', $slug);
                     $item_edit->set('category', $_POST['catid']);
                     $item_edit->set('sub_category', $_POST['subcatid']);
@@ -165,7 +167,7 @@ function ajax_edit_advertise(){
                     $item_edit->set('latlong', $latlong);
                     $item_edit->set('screen_shot', $item_screen);
                     $item_edit->set('tag', $tags);
-                    $item_edit->set('updated_at', $location);
+                    $item_edit->set('updated_at', $timenow);
                     $item_edit->save();
                 }
                 elseif($item_status == "active" or $item_status == "softreject" or $item_status == "expire")
@@ -173,7 +175,7 @@ function ajax_edit_advertise(){
                     $item_insrt = ORM::for_table($config['db']['pre'].'product_resubmit')->create();
                     $item_insrt->product_id = $_POST['product_id'];
                     $item_insrt->user_id = $_SESSION['user']['id'];
-                    $item_insrt->product_name = $_POST['title'];
+                    $item_insrt->product_name = $post_title;
                     $item_insrt->category = $_POST['catid'];
                     $item_insrt->sub_category = $_POST['subcatid'];
                     $item_insrt->description = $description;
@@ -255,7 +257,7 @@ function ajax_edit_advertise(){
 
 
                     /*These details save in session and get on payment sucecess*/
-                    $title = $_POST['title'];
+                    $title = $post_title;
                     $payment_type = "premium";
                     $access_token = uniqid();
 
@@ -356,14 +358,14 @@ if(checkloggedin()) {
             $catid          = $info['category'];
             $subcatid       = $info['sub_category'];
             $title          = $info['product_name'];
-            $description    = de_sanitize($info['description']);
+            $description    = stripslashes(nl2br($info['description']));
             $price          = $info['price'];
             $phone          = $info['phone'];
             $negotiable     = $info['negotiable'];
             $hide_phone     = $info['hide_phone'];
             $tags           = $info['tag'];
             $cityid         = $info['city'];
-
+            $location = $info['location'];
             $latlong = $info['latlong'];
             $map = explode(',', $latlong);
             $mapLat = $map[0];
@@ -459,6 +461,7 @@ if(checkloggedin()) {
             $page->SetParameter ('TAGS', $tags);
             $page->SetParameter ('CITY', $cityid);
             $page->SetParameter ('CITYNAME', get_cityName_by_id($cityid));
+            $page->SetParameter ('LOCATION', $location);
             $page->SetParameter ('LATITUDE', $mapLat);
             $page->SetParameter ('LONGITUDE', $mapLong);
             $page->SetParameter ('USER_COUNTRY', strtolower($country_code));

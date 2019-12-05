@@ -228,23 +228,23 @@ function ajax_post_advertise(){
 
                 $price = $_POST['price'];
                 $phone = $_POST['phone'];
-                $price = isset($_POST['price']) ? $_POST['price'] : 0;
-                $phone = isset($_POST['phone']) ? $_POST['phone'] : 0;
+                $price = isset($_POST['price']) ? $_POST['price'] : '0';
+                $phone = isset($_POST['phone']) ? $_POST['phone'] : '0';
 
                 if(empty($_POST['price'])){
                     $price = 0;
                 }
 
-                $negotiable = isset($_POST['negotiable']) ? 1 : 0;
-                $hide_phone = isset($_POST['hide_phone']) ? 1 : 0;
-                $cityid = $_POST['city'];
+                $negotiable = isset($_POST['negotiable']) ? '1' : '0';
+                $hide_phone = isset($_POST['hide_phone']) ? '1' : '0';
+
 
                 if($config['post_desc_editor'] == 1)
                     $description = addslashes($_POST['content']);
                 else
                     $description = validate_input($_POST['content']);
 
-
+                $cityid = $_POST['city'];
                 $citydata = get_cityDetail_by_id($cityid);
                 $country = $citydata['country_code'];
                 $state = $citydata['subadmin1_code'];
@@ -257,7 +257,9 @@ function ajax_post_advertise(){
                 $mapLat = $_POST['latitude'];
                 $mapLong = $_POST['longitude'];
                 $latlong = $mapLat . "," . $mapLong;
-                $slug = create_post_slug($_POST['title']);
+
+                $post_title = removeEmailAndPhoneFromString($_POST['title']);
+                $slug = create_post_slug($post_title);
 
                 if(isset($_POST['tags'])){
                     $tags = $_POST['tags'];
@@ -286,9 +288,11 @@ function ajax_post_advertise(){
                 $expire_time = date('Y-m-d H:i:s', strtotime($timenow . ' +'.$ad_duration.' day'));
                 $expire_timestamp = strtotime($expire_time);
 
+
+
                 $item_insrt = ORM::for_table($config['db']['pre'].'product')->create();
                 $item_insrt->user_id = $_SESSION['user']['id'];
-                $item_insrt->product_name = $_POST['title'];
+                $item_insrt->product_name = $post_title;
                 $item_insrt->slug = $slug;
                 $item_insrt->status = $status;
                 $item_insrt->category = $_POST['catid'];
@@ -356,7 +360,7 @@ function ajax_post_advertise(){
                                         </div>';
 
                     /*These details save in session and get on payment sucecess*/
-                    $title = $_POST['title'];
+                    $title = $post_title;
                     $payment_type = "premium";
                     $access_token = uniqid();
 

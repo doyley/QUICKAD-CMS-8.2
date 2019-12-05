@@ -86,6 +86,7 @@ if ($getVersions != '')
                     if($thisFileDir != ""){
                         $basedir = explode('/',$thisFileDir);
                         if($basedir[0] == "storage") continue;
+                        if(isset($basedir[1]) && $basedir[1] == "database") continue;
                         if($basedir[0] == "install" && $filename != 'upgrade.php') continue;
                         if($basedir[0] == "admin" && $filename == '.htaccess') continue;
                         if($filename == '.htaccess') continue;

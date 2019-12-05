@@ -27,12 +27,12 @@ require_once('../includes/seo-url.php');
 
 //SidePanel Ajax Function
 if(isset($_GET['action'])){
-    if(!check_allow()){
+    /* if(!check_allow()){
         $status = "Sorry:";
         $message = "permission denied for demo.";
         echo $json = '{"status" : "' . $status . '","message" : "' . $message . '"}';
         die();
-    }
+    } */
 
     if ($_GET['action'] == "addAdmin") { addAdmin(); }
     if ($_GET['action'] == "editAdmin") { editAdmin(); }
@@ -657,7 +657,7 @@ function addState(){
             $code = $_POST['code'].".1";
         }
 
-        $active = isset($_POST['active']) ? 1 : 0;
+        $active = isset($_POST['active']) ? '1' : '0';
 
         $insert_subadmin1 = ORM::for_table($config['db']['pre'].'subadmin1')->create();
         $insert_subadmin1->code = $code;
@@ -687,7 +687,7 @@ function editState(){
     global $config,$lang;
 
     if (isset($_POST['code'])) {
-        $active = isset($_POST['active']) ? 1 : 0;
+        $active = isset($_POST['active']) ? '1' : '0';
 
         $info = ORM::for_table($config['db']['pre'].'subadmin1')
             ->select('id')
@@ -749,7 +749,7 @@ function addDistrict(){
             $country = $pieces[0];
         }
 
-        $active = isset($_POST['active']) ? 1 : 0;
+        $active = isset($_POST['active']) ? '1' : '0';
 
         $insert_subadmin2 = ORM::for_table($config['db']['pre'].'subadmin2')->create();
         $insert_subadmin2->name = $_POST['name'];
@@ -779,7 +779,7 @@ function editDistrict(){
     global $config,$lang;
 
     if (isset($_POST['code'])) {
-        $active = isset($_POST['active']) ? 1 : 0;
+        $active = isset($_POST['active']) ? '1' : '0';
 
         $info = ORM::for_table($config['db']['pre'].'subadmin2')
             ->select('id')
@@ -813,7 +813,7 @@ function addCity(){
     global $config,$lang;
 
     if (isset($_POST['submit'])) {
-        $active = isset($_POST['active']) ? 1 : 0;
+        $active = isset($_POST['active']) ? '1' : '0';
 
         $insert_city = ORM::for_table($config['db']['pre'].'cities')->create();
         $insert_city->name = $_POST['name'];
@@ -885,7 +885,7 @@ function addCurrency()
 
     if (isset($_POST['submit'])) {
 
-        $in_left = isset($_POST['in_left']) ? 1 : 0;
+        $in_left = isset($_POST['in_left']) ? '1' : '0';
 
         $insert_currency = ORM::for_table($config['db']['pre'].'currencies')->create();
         $insert_currency->name = $_POST['name'];
@@ -922,7 +922,7 @@ function editCurrency()
     global $config,$lang;
 
     if (isset($_POST['id'])) {
-        $in_left = isset($_POST['in_left']) ? 1 : 0;
+        $in_left = isset($_POST['in_left']) ? '1' : '0';
 
         $update_currency = ORM::for_table($config['db']['pre'].'currencies')->find_one($_POST['id']);
         $update_currency->set('name', $_POST['name']);
@@ -1210,12 +1210,14 @@ function addLanguage()
     if (isset($_POST['submit'])) {
         if(isset($_POST['name']) && $_POST['name'] != ""){
 
-            $filePath = '../includes/lang/lang_'.strtolower($_POST['name']).'.php';
+            $post_langname = str_replace(' ', '', strtolower($_POST['name']));
+
+            $filePath = '../includes/lang/lang_'.$post_langname.'.php';
             if (!file_exists($filePath)) {
                 $source = 'en';
                 $target = $_POST['code'];
-                $auto_translate = isset($_POST['auto_tran']) ? 1 : 0;
-                $active = isset($_POST['active']) ? 1 : 0;
+                $auto_translate = isset($_POST['auto_tran']) ? '1' : '0';
+                $active = isset($_POST['active']) ? '1' : '0';
 
                 $trans = new GoogleTranslate();
                 $newLangArray = array();
@@ -1232,11 +1234,11 @@ function addLanguage()
                 fopen($filePath, "w");
                 change_config_file_settings($filePath, $newLangArray,$lang);
 
-                $lang_filename = strtolower($_POST['name']);
+                $lang_filename = $post_langname;
 
                 $insert_language = ORM::for_table($config['db']['pre'].'languages')->create();
                 $insert_language->code = $_POST['code'];
-                $insert_language->name = $_POST['name'];
+                $insert_language->name = $post_langname;
                 $insert_language->direction = $_POST['direction'];
                 $insert_language->file_name = $lang_filename;
                 $insert_language->active = $active;
@@ -1276,7 +1278,7 @@ function editLanguage()
 
     if (isset($_POST['id'])) {
 
-        $active = isset($_POST['active']) ? 1 : 0;
+        $active = isset($_POST['active']) ? '1' : '0';
         $lang_filename = strtolower($_POST['name']);
 
         $update_language = ORM::for_table($config['db']['pre'].'languages')->find_one($_POST['id']);
@@ -1327,7 +1329,7 @@ function addStaticPage()
                 $slug = create_slug($_POST['name']);
             else
                 $slug = create_slug($_POST['slug']);
-                $active = isset($_POST['active']) ? 1 : 0;
+                $active = isset($_POST['active']) ? '1' : '0';
 
             $insert_page = ORM::for_table($config['db']['pre'].'pages')->create();
             $insert_page->translation_lang = 'en';
@@ -1348,14 +1350,13 @@ function addStaticPage()
 
             $rows = ORM::for_table($config['db']['pre'].'languages')
                 ->select_many('code','name')
-                ->where('active', 1)
+                ->where('active', '1')
                 ->where_not_equal('code', 'en')
                 ->find_many();
 
             foreach ($rows as $fetch){
-
                 $insert_page = ORM::for_table($config['db']['pre'].'pages')->create();
-                $insert_page->translation_lang = $fetch['translation_lang'];
+                $insert_page->translation_lang = $fetch['code'];
                 $insert_page->translation_of = $id;
                 $insert_page->parent_id = $id;
                 $insert_page->name = $_POST['name'];
@@ -1409,7 +1410,7 @@ function editStaticPage()
                 $slug = create_slug($_POST['name']);
             else
                 $slug = create_slug($_POST['slug']);
-            $active = isset($_POST['active']) ? 1 : 0;
+            $active = isset($_POST['active']) ? '1' : '0';
 
             $update_page = ORM::for_table($config['db']['pre'].'pages')->find_one($_POST['id']);
             $update_page->set('name', $_POST['name']);
@@ -1453,7 +1454,7 @@ function addFAQentry()
             $errors[]['message'] = $lang['FAQCONTENT_REQ'];
         }
         if (!count($errors) > 0) {
-            $active = isset($_POST['active']) ? 1 : 0;
+            $active = isset($_POST['active']) ? '1' : '0';
 
             $insert_faq = ORM::for_table($config['db']['pre'].'faq_entries')->create();
             $insert_faq->translation_lang = 'en';
@@ -1522,7 +1523,7 @@ function editFAQentry()
             $errors[]['message'] = $lang['FAQCONTENT_REQ'];
         }
         if (!count($errors) > 0) {
-            $active = isset($_POST['active']) ? 1 : 0;
+            $active = isset($_POST['active']) ? '1' : '0';
 
             $pdo = ORM::get_db();
             $query = "UPDATE `".$config['db']['pre']."faq_entries` SET
@@ -1762,10 +1763,11 @@ function paymentEdit()
         $query_result = $pdo->query($query);
 
         if(isset($_POST['paypal_sandbox_mode'])){
-            update_option("paypal_sandbox_mode",$_POST['paypal_sandbox_mode']);
-            update_option("paypal_api_username",$_POST['paypal_api_username']);
-            update_option("paypal_api_password",$_POST['paypal_api_password']);
-            update_option("paypal_api_signature",$_POST['paypal_api_signature']);
+            update_option("paypal_sandbox_mode",isset($_POST['paypal_sandbox_mode'])? $_POST['paypal_sandbox_mode'] : "");
+            update_option("paypal_api_username",isset($_POST['paypal_api_username'])? $_POST['paypal_api_username'] : "");
+            update_option("paypal_api_password",isset($_POST['paypal_api_password'])? $_POST['paypal_api_password'] : "");
+            update_option("paypal_api_signature",isset($_POST['paypal_api_signature'])? $_POST['paypal_api_signature'] : "");
+            update_option("paypal_client_id",isset($_POST['paypal_client_id'])? $_POST['paypal_client_id'] : "");
         }
 
         if(isset($_POST['stripe_secret_key'])){
@@ -1776,6 +1778,13 @@ function paymentEdit()
         if(isset($_POST['paystack_public_key'])){
             update_option("paystack_public_key",$_POST['paystack_public_key']);
             update_option("paystack_secret_key",$_POST['paystack_secret_key']);
+        }
+
+        if(isset($_POST['payumoney_merchant_key'])){
+            update_option("payumoney_sandbox_mode",$_POST['payumoney_sandbox_mode']);
+            update_option("payumoney_merchant_key",$_POST['payumoney_merchant_key']);
+            update_option("payumoney_merchant_salt",$_POST['payumoney_merchant_salt']);
+            update_option("payumoney_merchant_id",$_POST['payumoney_merchant_id']);
         }
 
         if(isset($_POST['checkout_account_number'])){
@@ -2028,6 +2037,101 @@ function SaveSettings(){
         update_option("quickad_debug",$_POST['quickad_debug']);
         $status = "success";
         $message = 'General setting updated Successfully';
+    }
+
+    if (isset($_POST['app_setting'])) {
+        update_option("app_name",$_POST['app_name']);
+        update_option("app_version",$_POST['app_version']);
+        update_option("detect_live_location",$_POST['detect_live_location']);
+        update_option("firebase_server_key",$_POST['firebase_server_key']);
+        update_option("facebook_interstitial",$_POST['facebook_interstitial']);
+        update_option("google_interstitial",$_POST['google_interstitial']);
+        update_option("google_banner",$_POST['google_banner']);
+        update_option("premium_app",$_POST['premium_app']);
+        $status = "success";
+        $message = 'App setting updated Successfully';
+    }
+
+    if (isset($_POST['brodcast_push_notification'])) {
+        $push_users_list = $_POST['push_users_list'];
+        $notification_title = $_POST['notification_title'];
+        $notification_message = $_POST['notification_message'];
+
+
+        $notification_title = ($notification_title != null)? $notification_title : $config['app_name'];
+
+        if($push_users_list == "0"){
+            /*******For All Users*******/
+            $result = ORM::for_table($config['db']['pre'].'firebase_device_token')
+                ->select('token')
+                ->find_many();
+            if(isset($result)){
+                $token = array();
+                foreach($result as $info){
+                    $token[] = $info['token'];
+                }
+            }else{
+                return;
+            }
+        }else if($push_users_list == "1"){
+            /*******For Registered Users*******/
+            $result = ORM::for_table($config['db']['pre'].'firebase_device_token')
+                ->select('token')
+                ->where_not_equal('user_id', '0')
+                ->find_many();
+            if(isset($result)){
+                $token = array();
+                foreach($result as $info){
+                    $token[] = $info['token'];
+                }
+            }else{
+                return;
+            }
+        }
+        else{
+            /*******For Unregistered Users*******/
+            $result = ORM::for_table($config['db']['pre'].'firebase_device_token')
+                ->select('token')
+                ->where('user_id', '0')
+                ->find_many();
+
+            if(isset($result)){
+                $token = array();
+                foreach($result as $info){
+                    $token[] = $info['token'];
+                }
+            }else{
+                return;
+            }
+        }
+
+        $url = 'https://fcm.googleapis.com/fcm/send';
+        $fields = array (
+            'registration_ids' => $token ,
+            'notification' => array (
+                "body" => $notification_message,
+                "title" => $notification_title,
+                "icon" => "myicon"
+            )
+        );
+
+        $fields = json_encode ( $fields );
+        $headers = array (
+            'Authorization: key=' . $config['firebase_server_key'],
+            'Content-Type: application/json'
+        );
+        $ch = curl_init ();
+        curl_setopt ( $ch, CURLOPT_URL, $url );
+        curl_setopt ( $ch, CURLOPT_POST, true );
+        curl_setopt ( $ch, CURLOPT_HTTPHEADER, $headers );
+        curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
+        curl_setopt ( $ch, CURLOPT_POSTFIELDS, $fields );
+
+        $result = curl_exec ( $ch );
+        curl_close ( $ch );
+
+        $status = "success";
+        $message = 'Notification Sent Successfully';
     }
 
     if (isset($_POST['international'])) {

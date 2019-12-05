@@ -14,7 +14,6 @@
                             <h1 class="title">{LANG_HOME_BANNER_HEADING}</h1>
                             <h3>{LANG_HOME_BANNER_TAGLINE}</h3>
 
-
                             <!-- banner-form -->
                             <form autocomplete="off" class="form-inline" method="get" action="{LINK_LISTING}" accept-charset="UTF-8" style="display:block">
                                 <div class="search-banner-wrapper">
@@ -89,11 +88,13 @@
         <div class="main-content" id="serchlist">
             <!-- row -->
             <div class="row">
+                <!-- advertisement Left-->
                 IF("{LEFT_ADSTATUS}"=="1"){
                 <div class="hidden-xs hidden-sm col-md-2 text-center">
                     <div class="advertisement" id="quickad-left">{LEFT_ADSCODE}</div>
                 </div>
                 {:IF}
+                <!-- advertisement Left-->
                 <!-- product-list -->
                 <div class="{CATEGORY_COLUMN}">
                     <!-- categorys -->
@@ -114,12 +115,12 @@
                             {/LOOP: CAT}
                         </ul>
                     </div>
-                    <!-- category-ad -->
+					<!-- category-ad -->
                     <!-- quickad-section -->
                     <div class="quickad-section text-center" id="quickad-top">{TOP_ADSCODE}</div>
                     <!-- quickad-section -->
-
                     <!-- featured-slide -->
+                      <!-- featured-slide -->
                     <div class='section featured-slide IF("{POST_PREMIUM_LISTING}"=="0"){ hidden {:IF}'>
                         <div class="row">
                             <div class="col-sm-12">
@@ -135,9 +136,7 @@
                                 <div class="quick-item">
                                 <!-- item-image -->
                                 <div class="item-image-box">
-                                    <div class="item-image"><a href="{ITEM.link}"><img
-                                            src="{SITE_URL}storage/products/thumb/{ITEM.picture}" alt="{ITEM.product_name}"
-                                            class="img-responsive"></a>
+                                    <div class="item-image"><a href="{ITEM.link}"><img src="{SITE_URL}storage/products/thumb/{ITEM.picture}" alt="{ITEM.product_name}" class="img-responsive"></a>
 
                                         <div class="item-badges">
                                             IF("{ITEM.featured}"=="1"){ <span class="featured">{LANG_FEATURED}</span>{:IF}
@@ -168,8 +167,7 @@
                                         <div class="ad-meta">
                                             IF("{ITEM.price}"!="0"){ <span class="item-price"> {ITEM.price} </span> {:IF}
                                             <ul class="contact-options pull-right" id="set-favorite">
-                                                <li><a href="#" data-item-id="{ITEM.id}" data-userid="{USER_ID}"
-                                                       data-action="setFavAd" class="fav_{ITEM.id} fa fa-heart IF("{ITEM.favorite}"=="1"){ active {:IF}"></a></li>
+                                                <li><a href="#" data-item-id="{ITEM.id}" data-userid="{USER_ID}" data-action="setFavAd" class="fav_{ITEM.id} fa fa-heart IF("{ITEM.favorite}"=="1"){ active {:IF}"></a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -184,80 +182,82 @@
                     </div>
                         <!-- #featured-slider -->
                     </div>
+
                     <!-- featured-slide -->
                     <!-- recent-slide -->
-                    <div class="section recommended-ads">
+                     <div class="section recommended-ads">
                         <div class="row">
-                            <div class="col-sm-12">
-                                <div class="featured-top">
+                           <div class="col-sm-12">  
+                                <div class="featured-top"> 
                                     <h4>{LANG_LATEST_ADS}</h4>
                                 </div>
                             </div>
-                        </div>
-                        <!-- recent-slider -->
-                        <div class="recommended-slider" id="serchlist">
-                            <div id="latest-slider">
-                                {LOOP: ITEM2}
-                                <div class="quick-item ">
-                                <!-- item-image -->
-                                <div class="item-image-box">
-                                    <div class="item-image"><a href="{ITEM2.link}"><img
-                                            src="{SITE_URL}storage/products/thumb/{ITEM2.picture}" alt="{ITEM2.product_name}" class="img-responsive"></a>
+                        
+                            <!-- recent-slider -->
+                            {LOOP: ITEM2}
 
-                                        <div class="item-badges">
-                                            IF("{ITEM2.featured}"=="1"){ <span class="featured">{LANG_FEATURED}</span> {:IF}
-                                            IF("{ITEM2.urgent}"=="1"){ <span>{LANG_URGENT}</span> {:IF}
-                                        </div>
-                                    </div>
+                            <div class="col-md-4 col-xs-6" style="margin-bottom: 30px;">
+
+                                <div class="quick-item">
                                     <!-- item-image -->
-                                </div>
-                                <div class="item-info {ITEM2.highlight_bg}">
-                                    <!-- ad-info -->
-                                    <div class="ad-info">
-                                        <h4 class="item-title">
-                                            IF("{ITEM2.sub_image}"!=""){
-                                            <img src="{ITEM2.sub_image}" width="24px" alt="{ITEM2.sub_title}" title="{ITEM2.sub_title}" style="display: inline-block;width: 24px"/>
-                                            {:IF}
-                                            <a href="{ITEM2.link}">{ITEM2.product_name}</a></h4>
-                                        <ol class="breadcrumb">
-                                            <li><a href="{ITEM2.catlink}">{ITEM2.category}</a></li>
-                                            <li class="hidden"><a title="{ITEM2.sub_category}" href="{ITEM2.subcatlink}">{ITEM2.sub_category}</a>
-                                            </li>
-                                        </ol>
-                                        <ul class="item-details">
-                                            <li><i class="fa fa-map-marker"></i><a href="{ITEM2.citylink}">{ITEM2.location}</a></li>
-                                            <li><i class="fa fa-clock-o"></i>{ITEM2.created_at}</li>
-                                        </ul>
-                                        <div class="ad-meta">
-                                            IF("{ITEM2.price}"!="0"){ <span class="item-price"> {ITEM2.price} </span> {:IF}
-                                            <ul class="contact-options pull-right" id="set-favorite">
-                                                <li><a href="#" data-item-id="{ITEM2.id}" data-userid="{USER_ID}" data-action="setFavAd"
-                                                       class="fav_{ITEM2.id} fa fa-heart IF("{ITEM2.favorite}"=="1"){ active {:IF}"></a></li>
-                                            </ul>
+                                    <div class="item-image-box">
+                                        <div class="item-image" style="height:200px">
+                                            <a href="{ITEM2.link}">
+                                                <img src="{SITE_URL}storage/products/thumb/{ITEM2.picture}" alt="{ITEM2.product_name}" class="img-responsive">
+                                            </a>
+                                            <div class="item-badges">
+                                                IF("{ITEM2.featured}"=="1"){ <span class="featured">{LANG_FEATURED}</span>{:IF}
+                                                IF("{ITEM2.urgent}"=="1"){ <span>{LANG_URGENT}</span> {:IF}
+                                            </div>
                                         </div>
+                                        <!-- item-image -->
                                     </div>
-                                    <!-- ad-info -->
+                                    <div class="item-info {ITEM2.highlight_bg}">
+                                        <!-- ad-info -->
+                                        <div class="ad-info">
+                                            <h4 class="item-title">
+                                                IF("{ITEM2.sub_image}"!=""){
+                                                <img src="{ITEM2.sub_image}" width="24px" alt="{ITEM2.sub_title}" title="{ITEM2.sub_title}" style="display: inline-block;width: 24px"/>
+                                                {:IF}
+                                                <a href="{ITEM2.link}">{ITEM2.product_name}</a>
+                                            </h4>
+                                            <ol class="breadcrumb">
+                                                <li><a href="{ITEM2.catlink}">{ITEM2.category}</a></li>
+                                                <li class="hidden"><a title="{ITEM2.sub_category}" href="{ITEM2.subcatlink}">{ITEM2.sub_category}</a></li>
+                                            </ol>
+                                            <ul class="item-details">
+                                                <li><i class="fa fa-map-marker"></i><a href="{ITEM2.citylink}">{ITEM2.location}</a></li>
+                                            </ul>
+                                            <div class="ad-meta">
+                                                IF("{ITEM2.price}"!="0"){ <span class="item-price"> {ITEM2.price} </span> {:IF}
+                                                <ul class="contact-options pull-right" id="set-favorite">
+                                                    <li><a href="#" data-item-id="{ITEM2.id}" data-userid="{USER_ID}" data-action="setFavAd" class="fav_{ITEM2.id} fa fa-heart IF("{ITEM2.favorite}"=="1"){ active {:IF}"></a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <!-- ad-info -->
+                                    </div>
+                                    <!-- item-info -->
                                 </div>
-                                <!-- item-info -->
                             </div>
-                            <!-- quick-item -->
-                            {/LOOP: ITEM2}
+
+                             <!-- quick-item -->
+                             {/LOOP: ITEM2}
+
                         </div>
-                        <!-- recent-slider -->
                     </div>
-                        <!-- #recent-slider -->
+                    <!-- #recent-slider -->
                     </div>
-                    <!-- recent-slide -->
+
+                    <!-- advertisement -->
+                    IF("{RIGHT_ADSTATUS}"=="1"){
+                    <div class="hidden-xs hidden-sm col-md-2 text-center">
+                        <div class="advertisement" id="quickad-right">{RIGHT_ADSCODE}</div>
+                    </div>
+                    {:IF}
+                    <!-- advertisement -->
                 </div>
                 <!-- product-list -->
-                <!-- advertisement -->
-
-                IF("{RIGHT_ADSTATUS}"=="1"){
-                <div class="hidden-xs hidden-sm col-md-2 text-center">
-                    <div class="advertisement" id="quickad-right">{RIGHT_ADSCODE}</div>
-                </div>
-                {:IF}
-                <!-- advertisement -->
             </div>
             <!-- row -->
         </div>

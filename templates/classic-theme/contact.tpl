@@ -71,10 +71,9 @@
                         <hr>
                         <h4 class="heading">{LANG_CONTACT_INFORMATION}</h4>
                         <ul class="list-icons">
-                            <li><i class="fa fa-map-marker"></i> <strong>{LANG_ADDRESS}:</strong> {ADDRESS}</li>
-                            <li><i class="fa fa-phone"></i> <strong>{LANG_PHONE}:</strong> <a href="tel:{PHONE}">{PHONE}</a></li>
-                            <li><i class="fa fa-envelope"></i> <strong>{LANG_EMAIL}:</strong> <a href="mailto:{EMAIL}">{EMAIL}</a>
-                            </li>
+                            IF("{ADDRESS}"!=""){ <li><i class="fa fa-map-marker"></i>{ADDRESS}</li>{:IF}
+                            IF("{PHONE}"!=""){ <li><i class="fa fa-phone"></i><a href="tel:{PHONE}">{PHONE}</a></li>{:IF}
+                            IF("{EMAIL}"!=""){ <li><i class="fa fa-envelope"></i><a href="mailto:{EMAIL}">{EMAIL}</a></li>{:IF}
                         </ul>
                     </div>
                 </div>

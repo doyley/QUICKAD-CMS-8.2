@@ -10,7 +10,7 @@
                 <div class="banner">
                     <!-- banner-form -->
                     <div class="banner-form banner-form-full">
-                        <form action="#" id="hero-home-map">
+                        <form action="{LINK_LISTING}" method="get" id="hero-home-map">
                             <!-- category-change -->
                             <div class="row">
                                 <div class="col-md-4">

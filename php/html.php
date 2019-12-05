@@ -4,7 +4,7 @@ $info = ORM::for_table($config['db']['pre'].'pages')
     ->select('translation_of')
     ->where(array(
         'slug' => $_GET['id'],
-        'active' => 1
+        'active' => '1'
     ))
     ->find_one();
 
@@ -12,10 +12,10 @@ $info2 = ORM::for_table($config['db']['pre'].'pages')
     ->where(array(
         'translation_lang' => $config['lang_code'],
         'translation_of' => $info['translation_of'],
-        'active' => 1
+        'active' => '1'
     ))
     ->find_one();
-if (count($info2) > 0)
+if (!empty($info2))
 {
     $html = stripslashes($info2['content']);
     $name = stripslashes($info2['name']);

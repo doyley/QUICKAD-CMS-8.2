@@ -567,17 +567,7 @@ $lang['YOUR_CITY'] = 'Din stad';
 $lang['YOU_WANT_DELETE'] = 'Du vill ta bort denna annons';
 $lang['YUSERNAME'] = 'Ditt användarnamn';
 $lang['ZIPCODE'] = 'Postnummer';
-
-$lang['UE_OCCUPIED'] = 'Användarnamn eller e-post är redan upptaget';
-$lang['ERROR_WEFIX'] = 'Något gick fel, vi arbetar med att fixa det så snart som möjligt';
-$lang['CHECK_CONNECTION'] = 'Kontrollera din internetanslutning';
-$lang['OWNTSHARE_EMAIL'] = 'Det verkar som att ägaren inte har delat sitt email-ID';
-$lang['INT_YR_PROPERTY'] = 'Jag är intresserad av din egendom';
-$lang['CAN_DISCUSS'] = 'Vi kan diskutera';
-$lang['REGARDS'] = 'Hälsningar';
-$lang['CANCEL_FBLOGIN'] = 'Du har avbrutit facebook-inloggning, vänligen logga in för att fortsätta';
 $lang['CONFIRM'] = 'Bekräfta';
-$lang['OFFER_SUBMITTED'] = 'Ditt erbjudande skickat till ägaren';
 $lang['CLASSIFIEDS'] = 'Classifieds';
 $lang['MAKE_OFFER'] = 'Gör ett erbjudande';
 $lang['SELLER_ASK_PRICE'] = 'Säljaren frågar priset är';

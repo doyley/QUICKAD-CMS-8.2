@@ -99,8 +99,8 @@ if(checkloggedin()) {
         }
     }
     else{
-        $country_code = check_user_country();
-        $where.= "AND (country = '$country_code') ";
+        /*$country_code = check_user_country();
+        $where.= "AND (country = '$country_code') ";*/
     }
 
     $sql = "SELECT *
@@ -118,6 +118,7 @@ FROM `".$config['db']['pre']."product`
         foreach ($result as $info)
         {
             $items[$info['id']]['id'] = $info['id'];
+            $items[$info['id']]['status'] = $info['status'];
             $items[$info['id']]['product_name'] = $info['product_name'];
             $items[$info['id']]['cat_id'] = $info['category'];
             $items[$info['id']]['sub_cat_id'] = $info['sub_category'];
@@ -147,7 +148,7 @@ FROM `".$config['db']['pre']."product`
 
             $items[$info['id']]['favorite'] = check_product_favorite($info['id']);
 
-            $status = $info['status'];
+            /*$status = $info['status'];
 
             if ($status == "active") {
                 $items[$info['id']]['status'] = $lang['ACTIVE'];
@@ -160,7 +161,8 @@ FROM `".$config['db']['pre']."product`
             }
             else{
                 $items[$info['id']]['status'] = $info['status'];
-            }
+            }*/
+
 
             if($info['tag'] != ''){
                 $items[$info['id']]['showtag'] = "1";

@@ -561,17 +561,7 @@ $lang['YOUR_CITY'] = 'Twoje miasto';
 $lang['YOU_WANT_DELETE'] = 'Chcesz usunąć tę reklamę';
 $lang['YUSERNAME'] = 'Twoja nazwa użytkownika';
 $lang['ZIPCODE'] = 'Kod pocztowy';
-
-$lang['UE_OCCUPIED'] = 'Nazwa użytkownika lub e-mail są już zajęte ';
-$lang['ERROR_WEFIX'] = 'Coś poszło nie tak, pracujemy nad tym, aby naprawić go jak najszybciej';
-$lang['CHECK_CONNECTION'] = 'Sprawdź swoje połączenie internetowe';
-$lang['OWNTSHARE_EMAIL'] = 'Wygląda na to, że właściciel nie udostępnił swojego identyfikatora e-mail';
-$lang['INT_YR_PROPERTY'] = 'Jestem zainteresowany twoją własnością';
-$lang['CAN_DISCUSS'] = 'Możemy prowadzić dyskusję';
-$lang['REGARDS'] = 'Pozdrowienia';
-$lang['CANCEL_FBLOGIN'] = 'Anulowałeś logowanie na Facebooku, zaloguj się, aby kontynuować';
 $lang['CONFIRM'] = 'Potwierdź';
-$lang['OFFER_SUBMITTED'] = 'Twoja oferta złożona właścicielowi';
 $lang['CLASSIFIEDS'] = 'Ogłoszenia';
 $lang['MAKE_OFFER'] = 'Złóż ofertę';
 $lang['SELLER_ASK_PRICE'] = 'Cena wywoławcza sprzedawcy to';

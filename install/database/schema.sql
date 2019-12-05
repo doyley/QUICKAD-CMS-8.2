@@ -19,6 +19,40 @@ SET time_zone = "+00:00";
 --
 -- Database: `quickad`
 --
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `<<prefix>>push_notification`
+--
+DROP TABLE IF EXISTS `<<prefix>>push_notification`;
+CREATE TABLE `<<prefix>>push_notification` (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `sender_id` int(11) DEFAULT NULL,
+  `sender_name` varchar(255) DEFAULT NULL,
+  `owner_id` int(11) DEFAULT NULL,
+  `owner_name` varchar(255) DEFAULT NULL,
+  `product_id` int(11) DEFAULT NULL,
+  `product_title` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `message` varchar(255) DEFAULT NULL,
+  `recd` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `<<prefix>>firebase_device_token`
+--
+DROP TABLE IF EXISTS `<<prefix>>firebase_device_token`;
+CREATE TABLE `<<prefix>>firebase_device_token` (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `device_id` varchar(55) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `token` text,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 

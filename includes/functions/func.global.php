@@ -112,6 +112,11 @@ function create_header($page_title='',$meta_desc = '',$meta_image = '',$meta_art
     $page->SetParameter('DEFAULT_COUNTRY', $countryName);
     $page->SetParameter('DEFAULT_COUNTRY_ID', $country_code);
     $page->SetParameter('LANGUAGE_DIRECTION', get_current_lang_direction());
+    /*This code is for Welma theme*/
+    $page->SetParameter ('CATEGORY_DROPDOWN',get_categories_dropdown($lang));
+    $page->SetLoop ('CATEGORY_ICON',get_maincategory());
+    $page->SetParameter('BANNER_IMAGE', $config['home_banner']);
+    /*This code is for Welma theme*/
     return $page->CreatePageReturn($lang,$config,$link);
 }
 
@@ -338,14 +343,16 @@ function getLocationInfoByIp(){
         $ip = $remote;
     }
     if($ip != "::1"){
-        $ip_data = @json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip=".$ip));
-        if($ip_data && $ip_data->geoplugin_countryName != null){
-            $result['countryCode'] = $ip_data->geoplugin_countryCode;
-            $result['country'] = $ip_data->geoplugin_countryName;
-            $result['city'] = $ip_data->geoplugin_city;
-            $result['latitude'] = $ip_data->geoplugin_latitude;
-            $result['longitude'] = $ip_data->geoplugin_longitude;
-        }
+        require_once  ROOTPATH . '/includes/database/geoip/autoload.php';
+        // Country DB
+        $reader = new \MaxMind\Db\Reader(ROOTPATH .'/includes/database/geoip/geo_city.mmdb');
+        $data = $reader->get($ip);
+        $result['countryCode'] = @strtoupper(trim($data['country']['iso_code']));
+        $result['country'] = trim($data['country']['names']['en']);
+        $result['city'] = trim($data['city']['names']['en']);
+        $result['latitude'] = trim($data['location']['latitude']);
+        $result['longitude'] = trim($data['location']['longitude']);
+        //echo "<pre>". print_r($data)."</pre>";
     }
     else{
         $result['countryCode'] = "IN";
@@ -974,7 +981,7 @@ function email_template($template,$user_id=null,$password=null,$product_id=null,
         $email_subject = $page->CreatePageReturn($lang,$config,$link);
 
         $page = new HtmlTemplate();
-        $page->html = $config['email_message_ad_approve'];;
+        $page->html = $config['email_message_ad_approve'];
         $page->SetParameter ('ADTITLE', $item_title);
         $page->SetParameter ('ADLINK', $ad_link);
         $page->SetParameter ('SELLER_NAME', $user_fullname);
@@ -1300,6 +1307,7 @@ function validate_input($input,$strip_tags=false)
 }
 
 function stripUnwantedTagsAndAttrs($html_str){
+    $html_str = str_replace("&nbsp;"," ",$html_str);
     $html_str = str_replace("&", "&amp;", $html_str);
     $xml = new DOMDocument('1.0','utf-8');
     //$xml->xmlEncoding('utf-8');
@@ -1488,8 +1496,8 @@ function run_cron_job(){
          *
          */
 
-        $query = "UPDATE `".$config['db']['pre']."user` SET `online` = '0' WHERE `online` = '1' AND `lastactive` < '".validate_input(time()-60)."'";
-        $pdo->query($query);
+        //$query = "UPDATE `".$config['db']['pre']."user` SET `online` = '0' WHERE `online` = '1' AND `lastactive` < '".validate_input(time()-60)."'";
+        //$pdo->query($query);
 
 // END UPDATE ONLINE STATUS
 
@@ -1600,12 +1608,11 @@ function run_cron_job(){
                 $email_subject = $page->CreatePageReturn($lang,$config,$link);
 
                 $page = new HtmlTemplate();
-                $page->html = $config['email_message_post_notification'];;
+                $page->html = $config['email_message_post_notification'];
                 $page->SetParameter ('ADTITLE', $ad_title);
                 $page->SetParameter ('ADLINK', $ad_link);
                 $page->SetParameter ('ADID', $ad_id);
                 $email_body = $page->CreatePageReturn($lang,$config,$link);
-
 
 
                 $query2 = "SELECT * FROM ".$config['db']['pre']."notification WHERE ".$where;
@@ -1677,5 +1684,124 @@ function parse_name_from_email($text)
     list($text) = explode('@', $text);
     $text = preg_replace('/[^a-z0-9]/i', '', $text);
     return $text;
+}
+
+function clean_string($string) {
+    //$string = preg_replace('/[^A-Za-z0-9\- ]/', '', $string); // Removes special chars.
+    $string= preg_replace('/(?!\n)[[:cntrl:]]+/','',$string);
+    return preg_replace('/-+/', '-', $string); // Replaces multiple hyphens with single one.
+}
+
+function removeEmailAndPhoneFromString($string) {
+    // remove email
+    $string = preg_replace('/([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)/','',$string);
+
+    // remove phone
+    //$string = preg_replace('/([0-9]+[\- ]?[0-9]+)/','',$string);
+
+    return $string;
+}
+
+function thousandsCurrencyFormat($num) {
+
+    if($num>1000) {
+
+        $x = round($num);
+        $x_number_format = number_format($x);
+        $x_array = explode(',', $x_number_format);
+        $x_parts = array('k', 'm', 'b', 't');
+        $x_count_parts = count($x_array) - 1;
+        $x_display = $x;
+        $x_display = $x_array[0] . ((int) $x_array[1][0] !== 0 ? '.' . $x_array[1][0] : '');
+        $x_display .= $x_parts[$x_count_parts - 1];
+
+        return $x_display;
+
+    }
+
+    return $num;
+}
+
+function add_firebase_notification($SenderName,$SenderId,$OwnerName,$OwnerId,$productId,$productTitle,$type,$message)
+{
+    global $config, $lang, $results;
+
+    if($OwnerId){
+
+        $insert_note = ORM::for_table($config['db']['pre'].'push_notification')->create();
+        $insert_note->sender_name = $SenderName;
+        $insert_note->sender_id = $SenderId;
+        $insert_note->owner_name = $OwnerName;
+        $insert_note->owner_id = $OwnerId;
+        $insert_note->product_id = $productId;
+        $insert_note->product_title = $productTitle;
+        $insert_note->type = $type;
+        $insert_note->message = $message;
+        $insert_note->save();
+
+        return $note_id = $insert_note->id();
+
+    }else{
+        return 0;
+    }
+
+}
+
+function sendFCM($message,$user_id,$title=null,$sending_type = "one_user") {
+    global $config;
+    $title = ($title != null)? $title : $config['app_name'];
+
+    if($sending_type == "all_user"){
+        $result = ORM::for_table($config['db']['pre'].'firebase_device_token')
+            ->select('token')
+            ->where_not_equal('user_id', $user_id)
+            ->find_many();
+        if(isset($result)){
+            $token = array();
+            foreach($result as $info){
+                $token[] = $info['token'];
+            }
+        }else{
+            return;
+        }
+    }else{
+        $result = ORM::for_table($config['db']['pre'].'firebase_device_token')
+                ->select('token')
+                ->where('user_id', $user_id)
+                ->find_many();
+            if(isset($result)){
+                $token = array();
+                foreach($result as $info){
+                    $token[] = $info['token'];
+                }
+        }else{
+            return;
+        }
+    }
+
+    $url = 'https://fcm.googleapis.com/fcm/send';
+    $fields = array (
+        'registration_ids' => $token ,
+        'notification' => array (
+            "body" => $message,
+            "title" => $title,
+            "icon" => "myicon"
+        )
+    );
+
+    $fields = json_encode ( $fields );
+    $headers = array (
+        'Authorization: key=' . $config['firebase_server_key'],
+        'Content-Type: application/json'
+    );
+    $ch = curl_init ();
+    curl_setopt ( $ch, CURLOPT_URL, $url );
+    curl_setopt ( $ch, CURLOPT_POST, true );
+    curl_setopt ( $ch, CURLOPT_HTTPHEADER, $headers );
+    curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
+    curl_setopt ( $ch, CURLOPT_POSTFIELDS, $fields );
+
+    $result = curl_exec ( $ch );
+    curl_close ( $ch );
 }
 ?>

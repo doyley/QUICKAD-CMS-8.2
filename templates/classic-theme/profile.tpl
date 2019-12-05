@@ -26,7 +26,7 @@
                                     <img src="{SITE_URL}storage/profile/{USERIMAGE}" alt="{FULLNAME}" class="img-responsive">
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-6">
                                 <div class="user-admin">
                                     <h3>{FULLNAME}
                                         IF("{SUB_IMAGE}"!=""){
@@ -52,7 +52,7 @@
                                     <!-- social-links -->
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-4">
                                 <div class="user-ads-details">
                                     <div class="site-visit">
                                         <h3><a href="#">{PROFILEVISIT}</a></h3>

@@ -26,14 +26,15 @@ elseif($_GET['sort'] == "date")
 else
     $sort = "id";
 
-$limit = isset($_GET['limit']) ? $_GET['limit'] : 9;
+$limit = isset($_GET['limit']) ? $_GET['limit'] : 12;
 $filter = isset($_GET['filter']) ? $_GET['filter'] : "";
-$sorting = isset($_GET['sort']) ? $_GET['sort'] : "Newest";
+$sorting = isset($_GET['sort']) ? $_GET['sort'] : $lang['NEWEST'];
 $budget = isset($_GET['budget']) ? $_GET['budget'] : "";
 $keywords = isset($_GET['keywords']) ? str_replace("-"," ",$_GET['keywords']) : "";
 
 $category = "";
 $subcat = "";
+$SubCatList = "";
 
 if(isset($_GET['subcat']) && !empty($_GET['subcat'])){
 
@@ -51,6 +52,14 @@ if(isset($_GET['subcat']) && !empty($_GET['subcat'])){
         }
     }else{
         $category = get_category_id_by_slug($_GET['cat']);
+    }
+}
+
+if(isset($_GET['cat']) && !empty($_GET['cat'])) {
+    if(isset($_GET['subcat']) && !empty($_GET['subcat'])) {
+        $SubCatList = get_subcat_of_maincat( $_GET['cat'], true, $_GET['subcat'],"checked");
+    }else{
+        $SubCatList = get_subcat_of_maincat( $_GET['cat'], true);
     }
 }
 
@@ -143,10 +152,11 @@ if(isset($_GET['custom'])) {
 
             if ($key != "" && $value != "") {
                 $c_as = "c".$whr_count;
-                $custom_join .= " JOIN `".$config['db']['pre']."custom_data` AS $c_as ON $c_as.product_id = p.id AND `$c_as`.`field_id` = '$key' ";
+                $custom_join .= " 
+                JOIN `".$config['db']['pre']."custom_data` AS $c_as ON $c_as.product_id = p.id AND `$c_as`.`field_id` = '$key' ";
 
                 if (is_array($value)) {
-                    $custom_where = " AND ( ";
+                    $custom_where .= " AND ( ";
                     $cond_count = 0;
                     foreach ($value as $val) {
                         if ($cond_count == 0) {
@@ -272,7 +282,6 @@ if (mysqli_num_rows($result) > 0) {
         $item[$info['id']]['urgent'] = $info['urgent'];
         $item[$info['id']]['highlight'] = $info['highlight'];
         $item[$info['id']]['product_name'] = $info['product_name'];
-        $item[$info['id']]['description'] = $info['description'];
         $item[$info['id']]['category'] = $info['category'];
         $item[$info['id']]['price'] = $info['price'];
         $item[$info['id']]['phone'] = $info['phone'];
@@ -284,11 +293,26 @@ if (mysqli_num_rows($result) > 0) {
         $item[$info['id']]['country'] = get_countryName_by_id($info['country']);
         $item[$info['id']]['latlong'] = $info['latlong'];
 
+        $item[$info['id']]['rating'] = averageRating_by_itemid($info['id']);
+
+        $description = strip_tags(stripslashes(nl2br($info['description'])));
+        if (strlen($description) > 150) {
+
+            // truncate string
+            $stringCut = substr($description, 0, 150);
+            $endPoint = strrpos($stringCut, ' ');
+
+            //if the string doesn't contain any space then it will cut without word basis.
+            $description = $endPoint? substr($stringCut, 0, $endPoint) : substr($stringCut, 0);
+            $description .= '... <a href="'.$config['site_url'].'ad/'.$info['id'].'">'.$lang['READ_MORE'].'</a>';
+        }
+        $item[$info['id']]['desc'] = $description;
+
         $item[$info['id']]['tag'] = $info['tag'];
         $item[$info['id']]['status'] = $info['status'];
-        $item[$info['id']]['view'] = $info['view'];
+        $item[$info['id']]['view'] = thousandsCurrencyFormat($info['view']);
         $item[$info['id']]['created_at'] = timeAgo($info['created_at']);
-        $item[$info['id']]['updated_at'] = date('d M Y', $info['updated_at']);
+        //$item[$info['id']]['updated_at'] = date('d M Y', $info['updated_at']);
 
         $item[$info['id']]['cat_id'] = $info['category'];
         $item[$info['id']]['sub_cat_id'] = $info['sub_category'];
@@ -416,8 +440,12 @@ else{
 
 if(isset($_GET['city']) && !empty($_GET['city']))
 {
+    $cityid = $_GET['city'];
     $cityName = get_cityName_by_id($_GET['city']);
     $Pagetitle = $lang['ADS_LISTINGS']." ".$lang['IN']." ".$cityName;
+}else{
+    $cityid = "";
+    $cityName = "";
 }
 
 // Output to template
@@ -435,6 +463,8 @@ $page->SetParameter ('MAINCATEGORY', $mainCategory);
 $page->SetParameter ('SUBCATEGORY', $subCategory);
 $page->SetParameter ('BUDGET', $budget);
 $page->SetParameter ('KEYWORDS', $keywords);
+$page->SetParameter ('CITY', $cityid);
+$page->SetParameter ('CITYNAME', $cityName);
 $page->SetParameter ('RANGE1', $range1);
 $page->SetParameter ('RANGE2', $range2);
 $page->SetParameter ('ADSFOUND', $total);
@@ -457,12 +487,7 @@ else
     $page->SetParameter('LOGGED_IN', 0);
 }
 
-if(isset($category) && !empty($category)) {
-    $SubCatList = get_subcat_of_maincat( $category, true);
-    $page->SetLoop ('SUBCATLIST',$SubCatList);
-}else{
-    $page->SetLoop ('SUBCATLIST',"");
-}
+$page->SetLoop ('SUBCATLIST',$SubCatList);
 
 $Pagelink = "";
 if(count($_GET) >= 1){

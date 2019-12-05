@@ -1,7 +1,6 @@
 <?php
 require_once('includes.php');
 
-admin_session_start();
 // Unset all session values
 $_SESSION = array();
 

@@ -568,17 +568,7 @@ $lang['YOUR_CITY'] = 'Orașul tău';
 $lang['YOU_WANT_DELETE'] = 'Doriți să ștergeți acest anunț';
 $lang['YUSERNAME'] = 'Numele dvs. de utilizator';
 $lang['ZIPCODE'] = 'Cod poștal';
-
-$lang['UE_OCCUPIED'] = 'Utilizatorul sau e-mailul este deja ocupat';
-$lang['ERROR_WEFIX'] = 'Ceva a mers prost, lucrăm la remedierea acesteia cât mai curând posibil';
-$lang['CHECK_CONNECTION'] = 'Verificați conexiunea la internet';
-$lang['OWNTSHARE_EMAIL'] = 'Se pare că proprietarul nu și-a trimis codul de e-mail ';
-$lang['INT_YR_PROPERTY'] = 'Sunt interesat de proprietatea ta';
-$lang['CAN_DISCUSS'] = 'Putem discuta despre';
-$lang['REGARDS'] = 'Salutări';
-$lang['CANCEL_FBLOGIN'] = 'Ați anulat autentificarea prin Facebook, vă rugăm să vă autentificați pentru a continua';
 $lang['CONFIRM'] = 'Confirmare';
-$lang['OFFER_SUBMITTED'] = 'Oferta trimisă proprietarului';
 $lang['CLASSIFIEDS'] = 'Anunțuri';
 $lang['MAKE_OFFER'] = 'Efectuați o ofertă';
 $lang['SELLER_ASK_PRICE'] = 'Prețul solicitat de vânzător este';

@@ -303,7 +303,7 @@ elseif($step == 2)
                         <table border="0" cellspacing="0" cellpadding="3" align="center">
                             <tr>
                                 <td><span class="style12">Purchase Code: </span></td>
-                                <td><input name="PCode" placeholder="nulled" type="text" id="PCode" value="<?php if(isset($_POST['PCode'])){ echo $_POST['PCode']; } ?>"></td>
+                                <td><input name="PCode" placeholder="prowebber" type="text" id="PCode" value="<?php if(isset($_POST['PCode'])){ echo $_POST['PCode']; } ?>"></td>
                                 <td><span class="style12">&nbsp;<a href="javascript:alert('Quickad Purchase code');">(?)</a> </span></td>
                             </tr>
 
@@ -544,6 +544,7 @@ elseif($step == '5')
             <tr>
                 <td><div align="center"><span class="style5">&copy; <?php echo date("Y"); ?> <a href="https://bylancer.com" target="_blank">Bylancer.com</a> Version <?php echo $installing_version ?></span></div>
                     <br>
+                    <center><a href="https://tinyurl.com/ox4t6sh" target="_blank">DL ANYTHING FOR WEB!!</a></center>
                 </td>
             </tr>
         </table>

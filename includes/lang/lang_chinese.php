@@ -559,17 +559,7 @@ $lang['YOUR_CITY'] = '您的城市';
 $lang['YOU_WANT_DELETE'] = '您要删除此广告';
 $lang['YUSERNAME'] = '您的用户名';
 $lang['ZIPCODE'] = '邮政编码';
-
-$lang['UE_OCCUPIED'] ='用户名或电子邮件已被占用';
-$lang['ERROR_WEFIX'] ='出了问题，我们正在努力尽快修复它';
-$lang['CHECK_CONNECTION'] ='请检查您的网络连接';
-$lang['OWNTSHARE_EMAIL'] ='看起来所有者还没有分享他的电子邮件ID';
-$lang['INT_YR_PROPERTY'] ='我对你的房产感兴趣';
-$lang['CAN_DISCUSS'] ='我们可以讨论';
-$lang['REGARDS'] ='问候';
-$lang['CANCEL_FBLOGIN'] ='你已取消facebook登录，请登录继续';
 $lang['CONFIRM'] ='确认';
-$lang['OFFER_SUBMITTED'] ='您的优惠已提交给所有者';
 $lang['CLASSIFIEDS'] ='分类';
 $lang['MAKE_OFFER'] ='提出要约';
 $lang['SELLER_ASK_PRICE'] ='卖家要价是';

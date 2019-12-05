@@ -313,7 +313,7 @@ li.active a, a:hover, a {
     width : 98px;
     color : #777;
 }
-.spinner {
+/*.spinner {
     padding-top : 6px;
 }
 .spinner > div {
@@ -343,7 +343,7 @@ li.active a, a:hover, a {
         -webkit-transform : scale(1.0);
         transform         : translateY(0);
     }
-}
+}*/
 /*chat end*/
 
 

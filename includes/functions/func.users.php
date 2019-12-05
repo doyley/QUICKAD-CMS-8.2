@@ -49,31 +49,20 @@ function get_client_ip() {
 
 function check_user_country(){
     global $config;
+
     if(isset($_SESSION['user']['country']))
     {
         $country_code = $_SESSION['user']['country'];
     }
     else{
         if($config['country_type'] == 'multi'){
-            $geo_api = "";
             $ip = get_client_ip();
-            if($geo_api == "ipapi"){
-                $country_json = file_get_contents("http://ip-api.com/json/{$ip}");
-                $country = json_decode($country_json);
-                $country_code = isset($country->countryCode)? $country->countryCode : $config['specific_country'];
-            }
-            elseif($geo_api == "apinotes"){
-                $country_json = file_get_contents("http://apinotes.com/ipaddress/ip.php?ip={$ip}");
-                $country = json_decode($country_json);
-                $country_code = isset($country->countryCode)? $country->countryCode : $config['specific_country'];
-            }
-            elseif($geo_api == "ipinfo"){
-                $country_code= file_get_contents("http://ipinfo.io/{$ip}/country");
-                $country_code = isset($country_code)? trim($country_code) : $config['specific_country'];
-            }
-            else{
-                $country_code = $config['specific_country'];
-            }
+
+            require_once  ROOTPATH . '/includes/database/geoip/autoload.php';
+            // Country DB
+            $reader = new \MaxMind\Db\Reader(ROOTPATH .'/includes/database/geoip/geo_country.mmdb');
+            $data = $reader->get($ip);
+            $country_code = @strtoupper(trim($data['country']['iso_code']));
         }else{
             $country_code = $config['specific_country'];
         }
@@ -164,7 +153,6 @@ function check_user_lang(){
 }
 
 function get_current_lang_code(){
-
     global $config;
 
     $info = ORM::for_table($config['db']['pre'].'languages')
@@ -175,7 +163,6 @@ function get_current_lang_code(){
 }
 
 function check_user_theme(){
-
     global $config;
 
     if($config['userthemesel'])
@@ -463,23 +450,26 @@ function checkSocialUser($userData = array(),$picname){
     if(!empty($userData)){
 
         $fullname = $userData['first_name'].' '.$userData['last_name'];
-        $fbfirstname = $userData['first_name'];
+
+        /*split the string bases on the @ position*/
+        $parts = explode('@',  $userData['email']);
+        $part_username = $parts[0];
 
         // Check whether user data already exists in database
         $info = ORM::for_table($config['db']['pre'].'user')
             ->where_any_is(array(
                 array('email' => $userData['email']),
-                array('oauth_provider' => 'Fred', $userData['oauth_provider'] => $userData['oauth_uid'])))
-            ->count();
+                array('oauth_uid' => $userData['oauth_uid'])))
+            ->find_one();
 
-        if(isset($info['id'])){
+        if(!empty($info)){
             $userData = $info;
         }else{
-            if(check_username_exists($fbfirstname)){
-                $username = createusernameslug($fbfirstname);
+            if(check_username_exists($part_username)){
+                $username = createusernameslug($part_username);
             }
             else{
-                $username = $fbfirstname;
+                $username = $part_username;
             }
 
             $location = getLocationInfoByIp();

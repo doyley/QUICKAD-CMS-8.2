@@ -711,11 +711,11 @@ function get_customFields_by_catid($maincatid=null,$subcatid=null,$require=true,
     $custom_fields = array();
     $pdo = ORM::get_db();
     if(isset($subcatid) && $subcatid != "" && is_numeric($subcatid)){
-        $query = "SELECT * FROM `".$config['db']['pre']."custom_fields` WHERE find_in_set($subcatid,custom_subcatid) <> 0 order by custom_id ASC";
+        $query = "SELECT * FROM `".$config['db']['pre']."custom_fields` WHERE find_in_set($subcatid,custom_subcatid) <> 0 order by custom_order ASC";
     }elseif(isset($maincatid) && $maincatid != "" && is_numeric($maincatid)){
-        $query = "SELECT * FROM `".$config['db']['pre']."custom_fields` WHERE find_in_set($maincatid,custom_catid) <> 0 order by custom_id ASC";
+        $query = "SELECT * FROM `".$config['db']['pre']."custom_fields` WHERE find_in_set($maincatid,custom_catid) <> 0 order by custom_order ASC";
     }else{
-        $query = "SELECT * FROM `".$config['db']['pre']."custom_fields` WHERE custom_anycat = 'any' order by custom_id ASC";
+        $query = "SELECT * FROM `".$config['db']['pre']."custom_fields` WHERE custom_anycat = 'any' order by custom_order ASC";
     }
     $result = $pdo->query($query);
     foreach ($result as $info)
@@ -868,16 +868,30 @@ function get_customFields_by_catid($maincatid=null,$subcatid=null,$require=true,
             foreach($options as $key3=>$value3)
             {
                 $option_title = get_customOption_by_id($value3);
-                if($value3 == $custom_fields[$info['custom_id']]['default'])
-                {
-                    $radiobtn .= '<div class="radio radio-primary radio-inline"><input class="with-gap" type="radio" name="custom['.$info['custom_id'].']" id="'.$value3.$i.'" value="'.$value3.'" checked />';
-                    $radiobtn .= '<label for="'.$value3.$i.'">'.$option_title.'</label></div>';
+                if($config['tpl_name'] == 'explore-theme'){
+
+                    if($value3 == $custom_fields[$info['custom_id']]['default'])
+                    {
+                        $radiobtn .= '<div class="checkbox"><label><input type="radio"  name="custom['.$info['custom_id'].']" value="'.$value3.'" checked> '.$option_title.' </div>';
+                    }
+                    else
+                    {
+                        $radiobtn .= '<div class="checkbox"><label><input type="radio"  name="custom['.$info['custom_id'].']" value="'.$value3.'"> '.$option_title.' </div>';
+                    }
+
+                }else{
+                    if($value3 == $custom_fields[$info['custom_id']]['default'])
+                    {
+                        $radiobtn .= '<div class="radio radio-primary radio-inline"><input class="with-gap" type="radio" name="custom['.$info['custom_id'].']" id="'.$value3.$i.'" value="'.$value3.'" checked />';
+                        $radiobtn .= '<label for="'.$value3.$i.'">'.$option_title.'</label></div>';
+                    }
+                    else
+                    {
+                        $radiobtn .= '<div class="radio radio-primary radio-inline"><input class="with-gap" type="radio" name="custom['.$info['custom_id'].']" id="'.$value3.$i.'" value="'.$value3.'" />';
+                        $radiobtn .= '<label for="'.$value3.$i.'">'.$option_title.'</label></div>';
+                    }
                 }
-                else
-                {
-                    $radiobtn .= '<div class="radio radio-primary radio-inline"><input class="with-gap" type="radio" name="custom['.$info['custom_id'].']" id="'.$value3.$i.'" value="'.$value3.'" />';
-                    $radiobtn .= '<label for="'.$value3.$i.'">'.$option_title.'</label></div>';
-                }
+
                 $i++;
             }
             $custom_fields[$info['custom_id']]['radio'] = $radiobtn;
@@ -893,6 +907,7 @@ function get_customFields_by_catid($maincatid=null,$subcatid=null,$require=true,
             $options = explode(',',stripslashes($info['custom_options']));
             $Checkbox = "";
             $CheckboxBootstrap = "";
+            $exploreThemeCheckbox = '';
             $j = 0;
             $selected = "";
             foreach($options as $key4=>$value4)
@@ -929,15 +944,20 @@ function get_customFields_by_catid($maincatid=null,$subcatid=null,$require=true,
                     <label for="'.$value4.$j.'" >'.$option_title.'</label>
                 </div>';
 
+                $exploreThemeCheckbox .= '<div class="checkbox"><label><input type="checkbox" name="custom['.$info['custom_id'].'][]" value="'.$value4.'" '.$selected.'> '.$option_title.' </label></div>';
+
                 $j++;
             }
             $custom_fields[$info['custom_id']]['checkbox'] = $Checkbox;
             $custom_fields[$info['custom_id']]['checkboxBootstrap'] = $CheckboxBootstrap;
+            $custom_fields[$info['custom_id']]['exploreThemeCheckbox'] = $exploreThemeCheckbox;
         }
         else
         {
             $custom_fields[$info['custom_id']]['checkbox'] = '';
             $custom_fields[$info['custom_id']]['checkboxBootstrap'] = '';
+            $custom_fields[$info['custom_id']]['exploreThemeCheckbox'] = '';
+
         }
     }
 
@@ -989,26 +1009,42 @@ function check_sub_category_exists($cat_id){
 function get_category_id_by_slug($slug){
     global $config;
     $info = ORM::for_table($config['db']['pre'].'catagory_main')
+        ->select('cat_id')
         ->where('slug', $slug)
         ->find_one();
 
     if(!empty($info)){
         return $info['cat_id'];
     }else{
-        return 0;
+        $info = ORM::for_table($config['db']['pre'].'category_translation')
+            ->select('translation_id')
+            ->where(array(
+                'slug' => $slug,
+                'category_type' => 'main',
+            ))
+            ->find_one();
+        return $info['translation_id'];
     }
 }
 
 function get_subcategory_id_by_slug($slug){
     global $config;
     $info = ORM::for_table($config['db']['pre'].'catagory_sub')
+        ->select('sub_cat_id')
         ->where('slug', $slug)
         ->find_one();
 
     if(!empty($info)){
         return $info['sub_cat_id'];
     }else{
-        return 0;
+        $info = ORM::for_table($config['db']['pre'].'category_translation')
+            ->select('translation_id')
+            ->where(array(
+                'slug' => $slug,
+                'category_type' => 'sub',
+            ))
+            ->find_one();
+        return $info['translation_id'];
     }
 }
 
@@ -1418,6 +1454,67 @@ function get_categories($selected=array(),$selected_text='selected'){
 
 }
 
+function averageRating_by_itemid($productid)
+{
+    global $config,$lang;
+    $q_star1_result = ORM::for_table($config['db']['pre'].'reviews')
+        ->where(array(
+            'rating' => '1',
+            'publish' => '1',
+            'productID' => $productid
+        ))
+        ->count();
+
+    $q_star2_result = ORM::for_table($config['db']['pre'].'reviews')
+        ->where(array(
+            'rating' => '2',
+            'publish' => '1',
+            'productID' => $productid
+        ))
+        ->count();
+
+    $q_star3_result = ORM::for_table($config['db']['pre'].'reviews')
+        ->where(array(
+            'rating' => '3',
+            'publish' => '1',
+            'productID' => $productid
+        ))
+        ->count();
+
+    $q_star4_result = ORM::for_table($config['db']['pre'].'reviews')
+        ->where(array(
+            'rating' => '4',
+            'publish' => '1',
+            'productID' => $productid
+        ))
+        ->count();
+
+    $q_star5_result = ORM::for_table($config['db']['pre'].'reviews')
+        ->where(array(
+            'rating' => '5',
+            'publish' => '1',
+            'productID' => $productid
+        ))
+        ->count();
+
+    $total = $q_star1_result + $q_star2_result + $q_star3_result + $q_star4_result + $q_star5_result;
+
+    if ($total != 0) {
+        $rating = ($q_star1_result*1 + $q_star2_result*2 + $q_star3_result*3 + $q_star4_result*4 + $q_star5_result*5) / $total;
+    } else {
+        $rating = 0;
+    }
+
+    $rating = round($rating * 2) / 2;
+
+    if($total != 0){
+        return '<div class="rating-passive" data-rating="'.$rating.'"><span>('.$total.')</span><span class="stars"></span></div>';
+    }else{
+        return '';
+    }
+
+}
+
 function get_item_by_id($product_id){
     global $config;
     $iteminfo = array();
@@ -1492,9 +1589,9 @@ function get_items($userid=null,$status=null,$premium=false,$page=null,$limit=nu
 
     if($premium){
         if($where == '')
-            $where .= "where (g.show_on_home = 'yes')";
+            $where .= "where (g.show_on_home = 'yes' or p.featured = '1' or p.urgent = '1' or p.highlight = '1')";
         else
-            $where .= " AND (g.show_on_home = 'yes')";
+            $where .= " AND (g.show_on_home = 'yes' or p.featured = '1' or p.urgent = '1' or p.highlight = '1')";
     }
 
     if($location){
@@ -1602,6 +1699,8 @@ $where ORDER BY $order_by $pagelimit";
 
             $userinfo = get_user_data(null,$info['user_id']);
 
+            $item[$info['id']]['userpic'] = $userinfo['image'];
+            $item[$info['id']]['authorname'] = $userinfo['name'];
             $item[$info['id']]['username'] = $userinfo['username'];
             $author_url = create_slug($userinfo['username']);
 
@@ -1624,6 +1723,7 @@ $where ORDER BY $order_by $pagelimit";
             $city = create_slug($item[$info['id']]['city']);
             $item[$info['id']]['citylink'] = $config['site_url'].'city/'.$info['city'].'/'.$city;
 
+            $item[$info['id']]['rating'] = averageRating_by_itemid($info['id']);
         }
     }
     else {
@@ -1677,7 +1777,7 @@ function get_resubmited_items($userid=false,$status=null,$page=null,$limit=null,
             $item[$info['id']]['author_id'] = $info['user_id'];
 
             $price = price_format($info['price'],$info['country']);
-            $item[$info['id']]['price'] = $price."/".$lang['DAY'];
+            $item[$info['id']]['price'] = $price;
 
             $item[$info['id']]['cat_id'] = $info['category'];
             $item[$info['id']]['sub_cat_id'] = $info['sub_category'];

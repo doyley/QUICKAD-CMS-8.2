@@ -4,7 +4,6 @@ require_once('includes.php');
 <!-- Page JS Plugins CSS -->
 <link rel="stylesheet" href="assets/js/plugins/datatables/jquery.dataTables.min.css" />
 <main class="app-layout-content">
-
     <!-- Page Content -->
     <div class="container-fluid p-y-md">
         <!-- Partial Table -->
@@ -12,7 +11,7 @@ require_once('includes.php');
             <div class="card-header">
                 <h4>Expire Ads</h4>
                 <div class="pull-right">
-                    <a href="#" data-url="panel/renew_ads.php" data-toggle="slidePanel" class="btn btn-success waves-effect waves-light m-r-10">Renew All Ads</a>
+                    <a href="#" data-url="panel/post_renew.php" data-toggle="slidePanel" class="btn btn-success waves-effect waves-light m-r-10">Renew All Ads</a>
                 </div>
             </div>
             <div class="card-block">

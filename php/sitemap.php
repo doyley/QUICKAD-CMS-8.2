@@ -16,6 +16,7 @@ foreach ($result as $info1) {
     $maincat[$info1['cat_id']]['icon'] = $info1['icon'];
     $maincat[$info1['cat_id']]['main_title'] = $info1['cat_name'];
     $maincat[$info1['cat_id']]['main_id'] = $info1['cat_id'];
+    $maincat[$info1['cat_id']]['picture'] = $info1['picture'];
     $var++;
 }
 
@@ -30,6 +31,8 @@ foreach ($result as $info) {
     $subcat[$info['cat_id']]['icon'] = $info['icon'];
     $subcat[$info['cat_id']]['main_title'] = $info['cat_name'];
     $subcat[$info['cat_id']]['main_id'] = $info['cat_id'];
+    $subcat[$info['cat_id']]['picture'] = $info['picture'];
+
     $cat_url = create_slug($info['cat_name']);
     $subcat[$info['cat_id']]['catlink'] = $config['site_url'].'category/'.$info['slug'];
 

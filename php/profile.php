@@ -96,8 +96,8 @@ if(isset($_GET['username'])){
         }
     }
     else{
-        $country_code = check_user_country();
-        $where.= "AND (country = '$country_code') ";
+        /*$country_code = check_user_country();
+        $where.= "AND (country = '$country_code') ";*/
     }
 
     $get_userdata = get_user_data($_GET['username']);
@@ -107,10 +107,10 @@ if(isset($_GET['username'])){
 
         update_profileview($user_id);
 
-        $user_view = $get_userdata['view'];
+        $user_view = thousandsCurrencyFormat($get_userdata['view']);
         $user_name = $get_userdata['name'];
         $user_tagline = $get_userdata['tagline'];
-        $user_about = $get_userdata['description'];
+        $user_about = stripslashes(nl2br($get_userdata['description']));
         $user_sex = $get_userdata['sex'];
         $user_city = $get_userdata['city'];
         $user_address = $get_userdata['address'];
@@ -156,7 +156,7 @@ FROM `".$config['db']['pre']."product`
                 $item[$info['id']]['city'] = $cityname;
                 $item[$info['id']]['status'] = $info['status'];
                 $item[$info['id']]['hide'] = $info['hide'];
-
+                $item[$info['id']]['view'] = $info['view'];
                 $item[$info['id']]['created_at'] = timeAgo($info['created_at']);
                 $expire_date_timestamp = $info['expire_date'];
                 $expire_date = date('d-M-y', $expire_date_timestamp);
@@ -170,6 +170,8 @@ FROM `".$config['db']['pre']."product`
                 $item[$info['id']]['sub_category'] = $get_sub['sub_cat_name'];
 
                 $item[$info['id']]['favorite'] = check_product_favorite($info['id']);
+
+                $item[$info['id']]['rating'] = averageRating_by_itemid($info['id']);
 
                 if($info['tag'] != ''){
                     $item[$info['id']]['showtag'] = "1";

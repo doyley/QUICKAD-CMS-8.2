@@ -552,17 +552,7 @@ $lang['YOUR_CITY'] = 'העיר שלך';
 $lang['YOU_WANT_DELETE'] = 'ברצונך למחוק מודעה זו';
 $lang['YUSERNAME'] = 'שם המשתמש שלך';
 $lang['ZIPCODE'] = 'מיקוד';
-
-$lang['UE_OCCUPIED'] = 'שם משתמש או דוא"ל כבר תפוסים';
-$lang['ERROR_WEFIX'] = 'משהו השתבש, אנחנו עובדים על זה כדי לתקן את זה בהקדם האפשרי';
-$lang['CHECK_CONNECTION'] = 'בדוק את חיבור האינטרנט שלך';
-$lang['OWNTSHARE_EMAIL'] = 'נראה כאילו הבעלים לא שיתף את מזהה הדוא"ל שלו';
-$lang['INT_YR_PROPERTY'] = 'אני מתעניין בנכס שלך';
-$lang['CAN_DISCUSS'] = 'אנחנו יכולים לנהל דיון';
-$lang['Regards'] = 'דרישת שלום';
-$lang['CANCEL_FBLOGIN'] = 'ביטלת כניסה לפייסבוק, היכנס כדי להמשיך';
 $lang['CONFIRM'] = 'אשר';
-$lang['OFFER_SUBMITTED'] = 'ההצעה שלך נשלחה לבעלים';
 $lang['CLASSIFIEDS'] = 'מסווגות';
 $lang['MAKE_OFFER'] = 'הצע הצעה';
 $lang['SELLER_ASK_PRICE'] = 'מחיר המכירה של הספק';

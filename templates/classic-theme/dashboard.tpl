@@ -162,7 +162,7 @@
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label">{LANG_ABOUT_ME}</label>
                                     <div class="col-sm-9">
-                                        <textarea class="form-control border-form" id="content" rows="2" name="content">{AUTHORABOUT}</textarea>
+                                        <textarea class="form-control border-form" id="pageContent" rows="2" name="content">{AUTHORABOUT}</textarea>
                                     </div>
                                 </div>
                                 <section>
@@ -257,7 +257,45 @@
     <!-- container -->
 </section>
 <!-- ad-dashboard-page -->
+
 {OVERALL_FOOTER}
+<!-- CRUD FORM CONTENT - crud_fields_scripts stack -->
+<link media="all" rel="stylesheet" type="text/css" href="{SITE_URL}templates/{TPL_NAME}/assets/plugins/simditor/styles/simditor.css" />
+<script src="{SITE_URL}templates/{TPL_NAME}/assets/plugins/simditor/scripts/mobilecheck.js"></script>
+<script src="{SITE_URL}templates/{TPL_NAME}/assets/plugins/simditor/scripts/module.js"></script>
+<script src="{SITE_URL}templates/{TPL_NAME}/assets/plugins/simditor/scripts/uploader.js"></script>
+<script src="{SITE_URL}templates/{TPL_NAME}/assets/plugins/simditor/scripts/hotkeys.js"></script>
+<script src="{SITE_URL}templates/{TPL_NAME}/assets/plugins/simditor/scripts/simditor.js"></script>
+<script>
+    (function() {
+        $(function() {
+            var $preview, editor, mobileToolbar, toolbar, allowedTags;
+            Simditor.locale = 'en-US';
+            toolbar = ['bold','italic','underline','fontScale','|','ol','ul','blockquote','table','link'];
+            mobileToolbar = ["bold", "italic", "underline", "ul", "ol"];
+            if (mobilecheck()) {
+                toolbar = mobileToolbar;
+            }
+            allowedTags = ['br','span','a','img','b','strong','i','strike','u','font','p','ul','ol','li','blockquote','pre','h1','h2','h3','h4','hr','table'];
+            editor = new Simditor({
+                textarea: $('#pageContent'),
+                placeholder: '{LANG_AD_DESCRIPTION}',
+                toolbar: toolbar,
+                pasteImage: false,
+                defaultImage: '{SITE_URL}templates/{TPL_NAME}/assets/plugins/simditor/images/image.png',
+                upload: false,
+                allowedTags: allowedTags
+            });
+            $preview = $('#preview');
+            if ($preview.length > 0) {
+                return editor.on('valuechanged', function(e) {
+                    return $preview.html(editor.getValue());
+                });
+            }
+        });
+    }).call(this);
+</script>
+
 <script type="text/javascript">
     function NotifyValueChanged()
     {

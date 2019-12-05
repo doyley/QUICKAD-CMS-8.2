@@ -25,6 +25,8 @@ require_once('includes.php');
                                         <ul class="quickad-nav" role="tablist">
                                             <li class="quickad-nav-item active" data-target="#quickad_settings_general" data-toggle="tab">General</li>
                                             <li class="quickad-nav-item" data-target="#quickad_logo_watermark" data-toggle="tab">Logo / Watermark</li>
+                                            <li class="quickad-nav-item" data-target="#quickad_android" data-toggle="tab">Android App Setting</li>
+                                            <li class="quickad-nav-item" data-target="#quickad_push_notification" data-toggle="tab">App Push Notification</li>
                                             <li class="quickad-nav-item" data-target="#quickad_international" data-toggle="tab">International</li>
                                             <li class="quickad-nav-item" data-target="#quickad_email" data-toggle="tab">Email Setting</li>
 
@@ -216,6 +218,127 @@ require_once('includes.php');
                                                             <!-- Admin Logo upload-->
                                                             <div class="panel-footer">
                                                                 <button name="logo_watermark" type="submit" class="btn btn-primary btn-radius save-changes">Save</button>
+                                                                <button class="btn btn-default" type="reset">Reset</button>
+                                                            </div>
+
+                                                        </form>
+                                                    </div>
+
+                                                    <div class="tab-pane" id="quickad_android">
+                                                        <form method="post" action="ajax_sidepanel.php?action=SaveSettings" id="#quickad_android">
+
+                                                            <div class="form-group">
+                                                                <label for="app_name">App Name </label>
+                                                                <p class="help-block">The app name is what you would like your app to be known as.</p>
+                                                                <div>
+                                                                    <input name="app_name" class="form-control" type="Text" id="app_name" value="<?php echo get_option("app_name"); ?>">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="app_version">App Version </label>
+                                                                <p class="help-block">The app version represent your current mobile app version.</p>
+                                                                <div>
+                                                                    <input name="app_version" class="form-control" type="number" id="app_version" value="<?php echo get_option("app_version"); ?>">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="firebase_server_key">GCM Firebase Server Key</label>
+                                                                <div>
+                                                                    <input name="firebase_server_key" class="form-control" type="Text" id="firebase_server_key" value="<?php echo get_option("firebase_server_key"); ?>">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="detect_live_location">Detect Live Location </label>
+                                                                <p class="help-block">Turn on/off live location feature in mobile app.</p>
+                                                                <div>
+                                                                    <select name="detect_live_location" class="form-control">
+                                                                        <option <?php if(get_option("detect_live_location") == '1'){ echo "selected"; } ?> value="1">On</option>
+                                                                        <option <?php if(get_option("detect_live_location") == '0'){ echo "selected"; } ?> value="0">Off</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="facebook_interstitial">Facebook Interstitial Ads:</label>
+                                                                <div>
+                                                                    <select name="facebook_interstitial" class="form-control">
+                                                                        <option <?php if(get_option("facebook_interstitial") == '1'){ echo "selected"; } ?> value="1">On</option>
+                                                                        <option <?php if(get_option("facebook_interstitial") == '0'){ echo "selected"; } ?> value="0">Off</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="google_interstitial">Google Interstitial Ads:</label>
+                                                                <div>
+                                                                    <select name="google_interstitial" class="form-control">
+                                                                        <option <?php if(get_option("google_interstitial") == '1'){ echo "selected"; } ?> value="1">On</option>
+                                                                        <option <?php if(get_option("google_interstitial") == '0'){ echo "selected"; } ?> value="0">Off</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="google_banner">Google Banner:</label>
+                                                                <div>
+                                                                    <select name="google_banner" class="form-control">
+                                                                        <option <?php if(get_option("google_banner") == '1'){ echo "selected"; } ?> value="1">On</option>
+                                                                        <option <?php if(get_option("google_banner") == '0'){ echo "selected"; } ?> value="0">Off</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="premium_app">Premium App:</label>
+                                                                <div>
+                                                                    <select name="premium_app" class="form-control">
+                                                                        <option <?php if(get_option("premium_app") == '1'){ echo "selected"; } ?> value="1">On</option>
+                                                                        <option <?php if(get_option("premium_app") == '0'){ echo "selected"; } ?> value="0">Off</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="panel-footer">
+                                                                <button name="app_setting" type="submit" class="btn btn-primary btn-radius save-changes">Save</button>
+                                                                <button class="btn btn-default" type="reset">Reset</button>
+                                                            </div>
+
+                                                        </form>
+                                                    </div>
+
+                                                    <div class="tab-pane" id="quickad_push_notification">
+                                                        <form method="post" action="ajax_sidepanel.php?action=SaveSettings" id="#quickad_push_notification">
+                                                            <div class="form-group">
+                                                                <label for="push_users_list">Choose User List </label>
+                                                                <div>
+                                                                    <select name="push_users_list" class="form-control">
+                                                                        <option value="0">All Users</option>
+                                                                        <option value="1">Registered Users</option>
+                                                                        <option value="2">Unregistered Users</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="notification_title">Notification Title </label>
+                                                                <div>
+                                                                    <input name="notification_title" class="form-control" type="Text" id="notification_title">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="notification_message">Notification Message </label>
+                                                                <p class="help-block">This message will brodcast to all users mobile which you selected in the list.</p>
+                                                                <div>
+                                                                    <input name="notification_message" class="form-control" type="Text" id="notification_message">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="panel-footer">
+                                                                <button name="brodcast_push_notification" type="submit" class="btn btn-primary btn-radius save-changes">Send Push Notification</button>
                                                                 <button class="btn btn-default" type="reset">Reset</button>
                                                             </div>
 
@@ -856,14 +979,14 @@ require_once('includes.php');
                                                             <div class="form-group">
                                                                 <label>Quickad Classified Purchase Code:</label>
                                                                 <div>
-                                                                    <input name="purchase_key" type="text" class="form-control" value="prowebber">
+                                                                    <input name="purchase_key" type="text" class="form-control" value="">
                                                                 </div>
                                                             </div>
 
                                                             <div class="form-group">
                                                                 <label>Buyer Email:</label>
                                                                 <div>
-                                                                    <input name="buyer_email" type="text" class="form-control" value="raz0r@yandex.ru">
+                                                                    <input name="buyer_email" type="text" class="form-control" value="">
                                                                 </div>
                                                             </div>
                                                             <div class="panel-footer">

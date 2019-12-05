@@ -11,9 +11,7 @@ require_once('../includes/lang/lang_'.$config['lang'].'.php');
 
 admin_session_start();
 
-if (isset($_SESSION['admin']['id'],
-    $_SESSION['admin']['username'],
-    $_SESSION['admin']['login_string'])) {
+if (isset($_SESSION['admin']['id'])) {
     echo '<script>window.location="index.php"</script>';
 }
 
@@ -93,11 +91,7 @@ if(isset($_POST['username']))
 <body class="app-ui">
 <div class="app-layout-canvas">
     <div class="app-layout-container">
-
-
         <main class="app-layout-content">
-
-
             <!-- Page content -->
             <div class="page-content">
                 <div class="container">
@@ -105,16 +99,16 @@ if(isset($_POST['username']))
                         <!-- Login card -->
                         <div class="col-md-6 col-md-offset-3">
                             <div class="text-center"><img class="img-responsive" src="../storage/logo/<?php echo $config['site_admin_logo']?>"/></div>
-                            <div class="card">
+                            <div class="card" id="admin_login_card">
                                 <h3 class="card-header h4">Login</h3>
                                 <div class="card-block">
                                     <span style="color:#df6c6e;">
-                                    <?php
-                                    if(!empty($error)){
-                                        echo '<div class="byMsg byMsgError">! '.$error.'</div>';
-                                    }
-                                    ?>
-                                </span>
+                                        <?php
+                                        if(!empty($error)){
+                                            echo '<div class="byMsg byMsgError">! '.$error.'</div>';
+                                        }
+                                        ?>
+                                    </span>
                                     <form action="#" method="post">
                                         <div class="form-group">
                                             <label class="sr-only" for="username">Email</label>
@@ -177,6 +171,10 @@ if(isset($_POST['username']))
 <script src="assets/js/app.js"></script>
 <script src="assets/js/app-custom.js"></script>
 <script src='https://www.google.com/recaptcha/api.js'></script>
+
+<script>
+
+</script>
 </body>
 
 </html>

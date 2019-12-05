@@ -1,6 +1,6 @@
 <?php
 $start = microtime(true);
-$limit = 6;
+$limit = 12;
 
 if(isset($match['params']['country'])) {
     if ($match['params']['country'] != ""){

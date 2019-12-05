@@ -1,5 +1,7 @@
 <?php
 //Include GP config file && User class
+// Path to root directory of app.
+define("ROOTPATH", dirname(dirname(dirname(__DIR__))));
 require_once 'gpConfig.php';
 require_once('../../lang/lang_'.$config['lang'].'.php');
 
@@ -52,20 +54,11 @@ if ($gClient->getAccessToken()) {
     file_put_contents($sfile, $flargePic);
     file_put_contents($lfile, $flargePic);
 
-    if($gpUserData['email'] == "")
-    {
-        $error = "Please add email id in facebook account later try again";
-        echo "<script type='text/javascript'>alert('$error');</script>";
-        //redirect_parent($config['site_url'] ."login",true);
-        //exit();
-    }
-
-
     /* ---- Session Variables -----*/
     $userData = array();
     $userData = checkSocialUser($gpUserData,$picname);
 
-    if(!is_array($userData))
+    if(!isset($userData['email']))
     {
         $error = $lang['EMAILNOTEXIST'];
         echo "<script type='text/javascript'>alert('$error');</script>";

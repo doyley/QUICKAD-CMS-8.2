@@ -1,5 +1,7 @@
 <?php
 // Include FB config file && User class
+// Path to root directory of app.
+define("ROOTPATH", dirname(dirname(dirname(__DIR__))));
 require_once 'fbConfig.php';
 require_once('../../lang/lang_'.$config['lang'].'.php');
 
@@ -94,7 +96,7 @@ if(isset($accessToken)){
     $userData = array();
     $userData = checkSocialUser($fbUserData,$picname);
 
-    if(!is_array($userData))
+    if(!isset($userData['email']))
     {
         $error = $lang['EMAILNOTEXIST'];
         echo "<script type='text/javascript'>alert('$error');</script>";

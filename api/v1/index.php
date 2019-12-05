@@ -1,4 +1,16 @@
 <?php
+/**
+ * Quickad classified native android application API
+ * @author Bylancer
+ * @version 1.3
+ * @Date: 14/Sep/2019
+ * @url https://codecanyon.net/item/quickad-classified-native-android-app/23956447
+ * @Copyright (c) 2015-19 Devendra Katariya (bylancer.com)
+ */
+
+// Path to root directory of app.
+define("ROOTPATH", dirname(dirname(__DIR__)));
+
 require_once('../../includes/config.php');
 require_once('../../includes/sql_builder/idiorm.php');
 require_once('../../includes/db.php');
@@ -19,14 +31,17 @@ sec_session_start();
 
 if (isset($_REQUEST['action'])){
     if ($_REQUEST['action'] == "app_config") { app_config(); }
-
+    if ($_REQUEST['action'] == "payment_api_detail_config") { payment_api_detail_config(); }
     if ($_REQUEST['action'] == "login") { login(); }
     if ($_REQUEST['action'] == "forgot_password") { forgot_password(); }
 	if ($_REQUEST['action'] == "register") { register(); }
     if ($_REQUEST['action'] == "get_userdata_by_email") { get_userdata_by_email(); }  //not Using
+    if ($_REQUEST['action'] == "featured_urgent_ads") { featured_urgent_ads(); }
     if ($_REQUEST['action'] == "home_latest_ads") { home_latest_ads(); }
     if ($_REQUEST['action'] == "home_premium_ads") { home_premium_ads(); }
+    if ($_REQUEST['action'] == "related_ads") { related_ads(); }
     if ($_REQUEST['action'] == "ad_detail") { ad_detail(); }
+    if ($_REQUEST['action'] == "ad_delete") { ad_delete(); }
     if ($_REQUEST['action'] == "installed_countries") { installed_countries(); }
     if ($_REQUEST['action'] == "getStateByCountryCode") {getStateByCountryCode();}
     if ($_REQUEST['action'] == "getCityByStateCode") {getCityByStateCode();}
@@ -35,6 +50,7 @@ if (isset($_REQUEST['action'])){
     if ($_REQUEST['action'] == "get_all_msg") {get_all_msg();}
     if ($_REQUEST['action'] == "chat_conversation") {chat_conversation();}
     if ($_REQUEST['action'] == "send_message") {send_message();}
+    if ($_REQUEST['action'] == "unread_note_chat_count") { unread_note_chat_count(); }
     if ($_REQUEST['action'] == "languages_list") {languages_list();}
     if ($_REQUEST['action'] == "language_file") { language_file(); }
     if ($_REQUEST['action'] == "categories") {categories();}
@@ -44,6 +60,8 @@ if (isset($_REQUEST['action'])){
     if ($_REQUEST['action'] == "add_to_favorite") {add_to_favorite();}
     if ($_REQUEST['action'] == "remove_favorite") {remove_favorite();}
 
+    if ($_REQUEST['action'] == "payment_success_saving") {payment_success_saving();}
+
     if ($_REQUEST['action'] == "make_offer") { make_offer(); }
     if ($_REQUEST['action'] == "get_notification") { get_notification(); }
     if ($_REQUEST['action'] == "add_firebase_device_token") { add_firebase_device_token(); }
@@ -52,15 +70,296 @@ if (isset($_REQUEST['action'])){
     if ($_REQUEST['action'] == "custom_fields_json") { custom_fields_json(); }
     if ($_REQUEST['action'] == "upload_product_picture") { upload_product_picture(); }
     if ($_REQUEST['action'] == "upload_profile_picture") { upload_profile_picture(); }
-
     if ($_REQUEST['action'] == "save_post") { save_post(); }
     if ($_REQUEST['action'] == "search_post") { search_post(); }
+    if ($_REQUEST['action'] == "payumoney_create_hash") { payumoney_create_hash(); }
 }
 
 $status = "";
 $message = "";
 $results = array();
 /*Request Fields (* are mandatory)*/
+
+
+/*
+Payment Success Saving Order
+action = payment_success_saving
+1. name
+2. amount
+3. user_id
+4. product_id
+5. featured
+6. urgent
+7. highlight
+8. folder
+9. payment_type
+10. trans_desc
+
+Messages
+1. Success : success
+*/
+function payment_success_saving(){
+    global $config,$lang,$link;
+    $pdo = ORM::get_db();
+    //$lang_code = isset($_REQUEST['lang_code']) ? $_REQUEST['lang_code'] : null;
+    $title = $_REQUEST['name'];
+    $amount = $_REQUEST['amount'];
+    $folder = $_REQUEST['folder'];
+    $payment_type = $_REQUEST['payment_type'];
+    $user_id = $_REQUEST['user_id'];
+    $now = time();
+
+    if($payment_type == "subscr"){
+        $trans_desc = $title;
+        $subcription_id = $_REQUEST['sub_id'];
+
+        // Check that the payment is valid
+        $subsc_details = ORM::for_table($config['db']['pre'].'subscriptions')
+            ->where('sub_id', $subcription_id)
+            ->find_one();
+        if(!empty($subsc_details)){
+            // output data of each row
+
+            $term = 0;
+            if($subsc_details['sub_term'] == 'DAILY') {
+                $term = 86400;
+            }
+            elseif($subsc_details['sub_term'] == 'WEEKLY') {
+                $term = 604800;
+            }
+            elseif($subsc_details['sub_term'] == 'MONTHLY') {
+                $term = 2678400;
+            }
+            elseif($subsc_details['sub_term'] == 'YEARLY') {
+                $term = 31536000;
+            }
+
+            $sub_group_id = $subsc_details['group_id'];
+            $sub_amount = $subsc_details['sub_amount'];
+
+            $subsc_check = ORM::for_table($config['db']['pre'].'upgrades')
+                ->where('user_id', $user_id)
+                ->count();
+            if($subsc_check == 1)
+            {
+                $txn_type = 'subscr_update';
+            }
+            else
+            {
+                $txn_type = 'subscr_signup';
+            }
+
+            // Add time to their subscription
+            $expires = (time()+$term);
+
+            if($txn_type == 'subscr_update')
+            {
+
+                $query = "UPDATE `".$config['db']['pre']."upgrades` SET `sub_id` = '".validate_input($subcription_id)."',`upgrade_expires` = '".validate_input($expires)."' WHERE `user_id` = '".validate_input($user_id)."' LIMIT 1 ";
+                $pdo->query($query);
+
+                $person = ORM::for_table($config['db']['pre'].'user')->find_one($user_id);
+                $person->group_id = $sub_group_id;
+                $person->save();
+
+            }
+            elseif($txn_type == 'subscr_signup')
+            {
+                $unique_subscription_id = uniqid();
+                $subscription_status = "Active";
+
+                $subscription_stripe_customer_id = isset($_REQUEST['customer_id'])? $_REQUEST['customer_id'] : null;
+                $subscription_stripe_subscription_id = isset($_REQUEST['subscription_id'])? $_REQUEST['subscription_id'] : null;
+                $subscription_billing_day = isset($_REQUEST['billing_day'])? $_REQUEST['billing_day'] : null;
+                $subscription_length = 0;
+                $subscription_interval = isset($_REQUEST['interval'])? $_REQUEST['interval'] : null;
+                $subscription_trial_days = isset($_REQUEST['trial_days'])? $_REQUEST['trial_days'] : null;
+                $subscription_date_trial_ends = isset($_REQUEST['date_trial_ends'])? $_REQUEST['date_trial_ends'] : null;
+
+                $upgrades_insert = ORM::for_table($config['db']['pre'].'upgrades')->create();
+                $upgrades_insert->sub_id = $subcription_id;
+                $upgrades_insert->user_id = $user_id;
+                $upgrades_insert->upgrade_lasttime = $now;
+                $upgrades_insert->upgrade_expires = $expires;
+                $upgrades_insert->unique_id = $unique_subscription_id;
+                $upgrades_insert->stripe_customer_id = $subscription_stripe_customer_id;
+                $upgrades_insert->stripe_subscription_id = $subscription_stripe_subscription_id;
+                $upgrades_insert->billing_day = $subscription_billing_day;
+                $upgrades_insert->length = $subscription_length;
+                $upgrades_insert->interval = $subscription_interval;
+                $upgrades_insert->trial_days = $subscription_trial_days;
+                $upgrades_insert->status = $subscription_status;
+                $upgrades_insert->date_trial_ends = $subscription_date_trial_ends;
+                $upgrades_insert->save();
+
+                $person = ORM::for_table($config['db']['pre'].'user')->find_one($user_id);
+                $person->group_id = $sub_group_id;
+                $person->save();
+            }
+
+            //Update Amount in balance table
+            $balance = ORM::for_table($config['db']['pre'].'balance')->find_one(1);
+            $current_amount=$balance['current_balance'];
+            $total_earning=$balance['total_earning'];
+
+            $updated_amount=($sub_amount+$current_amount);
+            $total_earning=($sub_amount+$total_earning);
+
+            $balance->current_balance = $updated_amount;
+            $balance->total_earning = $total_earning;
+            $balance->save();
+
+            $ip = encode_ip($_SERVER, $_ENV);
+            $trans_insert = ORM::for_table($config['db']['pre'].'transaction')->create();
+            $trans_insert->product_name = $title;
+            $trans_insert->product_id = $subcription_id;
+            $trans_insert->seller_id = $user_id;
+            $trans_insert->status = 'success';
+            $trans_insert->amount = $amount;
+            $trans_insert->transaction_gatway = $folder;
+            $trans_insert->transaction_ip = $ip;
+            $trans_insert->transaction_time = $now;
+            $trans_insert->transaction_description = $trans_desc;
+            $trans_insert->transaction_method = 'Subscription';
+            $trans_insert->save();
+
+            unset($_REQUEST);
+            message($lang['SUCCESS'],$lang['PAYMENTSUCCESS'],$link['TRANSACTION']);
+            exit();
+        }
+        else{
+            unset($_REQUEST);
+            error($lang['INVALID_TRANSACTION'], __LINE__, __FILE__, 1,$lang,$config,$link);
+            exit();
+        }
+    }
+    else{
+        $item_pro_id = $_REQUEST['product_id'];
+        $item_featured = ($_REQUEST['featured'] == "1") ? "1" : "0";
+        $item_urgent =  ($_REQUEST['urgent'] == "1") ? "1" : "0";
+        $item_highlight = ($_REQUEST['highlight'] == "1") ? "1" : "0";
+        $trans_desc = $_REQUEST['trans_desc'];
+
+
+        $num_rows = ORM::for_table($config['db']['pre'].'product')
+            ->where(array(
+                'id' => $item_pro_id,
+                'user_id' => $user_id
+            ))
+            ->count();
+        if($num_rows == 1)
+            $valid_author = true;
+        else
+            $valid_author = false;
+
+        if($valid_author) {
+
+            $user_info = ORM::for_table($config['db']['pre'].'user')
+                ->select('group_id')
+                ->find_one($user_id);
+
+            $group_id = isset($user_info['group_id'])? $user_info['group_id'] : 0;
+
+            $group_info = get_usergroup_settings($group_id);
+            $featured_duration = $group_info['featured_duration'];
+            $urgent_duration = $group_info['urgent_duration'];
+            $highlight_duration = $group_info['highlight_duration'];
+            if($item_featured == '1'){
+                $f_duration_timestamp = $featured_duration*86400;
+                $featured_exp_date = (time()+$f_duration_timestamp);
+                $featured_insert = ORM::for_table($config['db']['pre'].'product')->find_one($item_pro_id);
+                $featured_insert->featured = '1';
+                $featured_insert->featured_exp_date = $featured_exp_date;
+                $featured_insert->save();
+            }
+            if($item_urgent == '1'){
+                $u_duration_timestamp = $urgent_duration*86400;
+                $urgent_exp_date = (time()+$u_duration_timestamp);
+                $urgent_insert = ORM::for_table($config['db']['pre'].'product')->find_one($item_pro_id);
+                $urgent_insert->urgent = '1';
+                $urgent_insert->urgent_exp_date = $urgent_exp_date;
+                $urgent_insert->save();
+            }
+            if($item_highlight == '1'){
+                $h_duration_timestamp = $highlight_duration*86400;
+                $highlight_exp_date = (time()+$h_duration_timestamp);
+                $highlight_insert = ORM::for_table($config['db']['pre'].'product')->find_one($item_pro_id);
+                $highlight_insert->highlight = '1';
+                $highlight_insert->highlight_exp_date = $highlight_exp_date;
+                $highlight_insert->save();
+            }
+
+            $num_rows2 = ORM::for_table($config['db']['pre'].'product_resubmit')
+                ->where(array(
+                    'product_id' => $item_pro_id,
+                    'user_id' => $user_id
+                ))
+                ->count();
+            if($num_rows2 == 1)
+                $valid_resubmission = false;
+            else
+                $valid_resubmission = true;
+
+            if($valid_resubmission){
+                if($item_featured == '1'){
+                    $f_duration_timestamp = $featured_duration*86400;
+                    $featured_exp_date = (time()+$f_duration_timestamp);
+                    $query = "UPDATE ". $config['db']['pre'] . "product_resubmit set featured = '1',featured_exp_date='$featured_exp_date' where product_id='".$item_pro_id."' LIMIT 1";
+                    $pdo->query($query);
+                }
+                if($item_urgent == '1'){
+                    $u_duration_timestamp = $urgent_duration*86400;
+                    $urgent_exp_date = (time()+$u_duration_timestamp);
+                    $query = "UPDATE ". $config['db']['pre'] . "product_resubmit set urgent = '1',urgent_exp_date='$urgent_exp_date' where product_id='".$item_pro_id."' LIMIT 1";
+                    $pdo->query($query);
+                }
+                if($item_highlight == '1'){
+                    $h_duration_timestamp = $highlight_duration*86400;
+                    $highlight_exp_date = (time()+$h_duration_timestamp);
+                    $query = "UPDATE ". $config['db']['pre'] . "product_resubmit set highlight = '1',highlight_exp_date='$highlight_exp_date' where product_id='".$item_pro_id."' LIMIT 1";
+                    $pdo->query($query);
+                }
+            }
+
+            //Update Amount in balance table
+            $balance = ORM::for_table($config['db']['pre'].'balance')->find_one(1);
+            $current_amount=$balance['current_balance'];
+            $total_earning=$balance['total_earning'];
+
+            $updated_amount=($amount+$current_amount);
+            $total_earning=($amount+$total_earning);
+            $balance->current_balance = $updated_amount;
+            $balance->total_earning = $total_earning;
+            $balance->save();
+
+            $ip = encode_ip($_SERVER, $_ENV);
+            $trans_insert = ORM::for_table($config['db']['pre'].'transaction')->create();
+            $trans_insert->product_name = $title;
+            $trans_insert->product_id = $item_pro_id;
+            $trans_insert->seller_id = $user_id;
+            $trans_insert->status = 'success';
+            $trans_insert->amount = $amount;
+            $trans_insert->featured = $item_featured;
+            $trans_insert->urgent = $item_urgent;
+            $trans_insert->highlight = $item_highlight;
+            $trans_insert->transaction_gatway = $folder;
+            $trans_insert->transaction_ip = $ip;
+            $trans_insert->transaction_time = $now;
+            $trans_insert->transaction_description = $trans_desc;
+            $trans_insert->transaction_method = 'Premium Ad';
+            $trans_insert->save();
+
+            $results['status'] = "success";
+            send_json($results);
+            die();
+        }
+        else{
+            $results['status'] = "error";
+            send_json($results);
+            die();
+        }
+    }
+}
 
 /*
 User Login Api
@@ -88,24 +387,34 @@ function get_category_translation_api($cattype,$catid,$lang_code){
 }
 
 function app_config(){
-    global $config,$results;
+    global $config,$lang,$results;
 
-    $config['app_name'] = 'Quickad';
+    $results['status'] = $lang['SUCCESS'];
+
     $config['site_url'] = $config['site_url'];
-    $config['default_country'] = $config['specific_country'];
-    $config['detect_live_location'] = 'yes';
-    $config['terms_page_link'] = 'https://classified.bylancer.com/page/terms';
-    $config['policy_page_link'] = 'https://classified.bylancer.com/contact';
-
-    $results['status'] = "success";
     $results['app_name'] = $config['app_name'];
+    $results['app_version'] = $config['app_version'];
+
     $results['default_country'] = $config['specific_country'];
-    $results['detect_live_location'] = $config['detect_live_location'];
-    $results['terms_page_link'] = $config['terms_page_link'];
-    $results['policy_page_link'] = $config['policy_page_link'];
+    $results['default_lang_code'] = $config['lang_code'];
+    $results['default_lang'] = ucfirst($config['lang']);
+    $results['terms_page_link'] = $config['termcondition_link'];
+    $results['policy_page_link'] = $config['privacy_link'];
+
+    $results['featured_fee'] = $config['featured_fee'];
+    $results['urgent_fee'] = $config['urgent_fee'];
+    $results['highlight_fee'] = $config['highlight_fee'];
+    $results['currency_code'] = $config['currency_code'];
+    $results['currency_sign'] = $config['currency_sign'];
+
+    $results['detect_live_location'] = ($config['detect_live_location'] == 1) ? "yes" : "no";
+    $results['facebook_interstitial'] = ($config['facebook_interstitial'] == 1) ? true : false;
+    $results['google_banner'] = ($config['google_banner'] == 1) ? true : false;
+    $results['google_interstitial'] = ($config['google_interstitial'] == 1) ? true : false;
+    $results['premium_app'] = ($config['premium_app'] == 1) ? true : false;
 
 
-/**********************************************************************************************************/
+    /*********************Category / Sub Category****************************************/
 
     $lang_code = isset($_REQUEST['lang_code']) ? $_REQUEST['lang_code'] : null;
 
@@ -119,7 +428,6 @@ function app_config(){
     $result1 = ORM::for_table($config['db']['pre'].'catagory_main')
         ->order_by_asc('cat_order')
         ->find_many();
-
 
     foreach ($result1 as $info1) {
         $cat['id'] = $info1['cat_id'];
@@ -154,7 +462,7 @@ function app_config(){
 
     $results['categories'] = $category;
 
-/**********************************************************************************************************/
+/******************************Installed Languages************************************/
 
     $language_array = array();
 
@@ -176,44 +484,132 @@ function app_config(){
 
     $results['languages'] = $language_array;
 
+    /***************************Payment Methods****************************/
+
+    $payment_types = array();
+
+    $rows = ORM::for_table($config['db']['pre'].'payments')->find_many();
+    foreach ($rows as $info)
+    {
+        $payment_types[$info['payment_folder']] = $info['payment_install'];
+    }
+
+    $results['payment_method'] = $payment_types;
+
     send_json($results);
     die();
 }
 
-
-
-function add_notification($SenderName,$SenderId,$OwnerName,$OwnerId,$productId,$productTitle,$type,$message)
+function payment_api_detail_config()
 {
     global $config, $lang, $results;
 
-    if($OwnerId){
+    /******************PAYPAL*******************/
+    $results['paypal_sandbox_mode'] = $config['paypal_sandbox_mode'];
+    //$results['paypal_api_username'] = $config['paypal_api_username'];
+    //$results['paypal_api_password'] = $config['paypal_api_password'];
+    //$results['paypal_api_signature'] = $config['paypal_api_signature'];
+    $results['paypal_client_id'] = $config['paypal_client_id'];
 
-        $insert_note = ORM::for_table($config['db']['pre'].'push_notification')->create();
-        $insert_note->sender_name = $SenderName;
-        $insert_note->sender_id = $SenderId;
-        $insert_note->owner_name = $OwnerName;
-        $insert_note->owner_id = $OwnerId;
-        $insert_note->product_id = $productId;
-        $insert_note->product_title = $productTitle;
-        $insert_note->type = $type;
-        $insert_note->message = $message;
-        $insert_note->save();
+    /******************STRIPE*******************/
+    $results['stripe_publishable_key'] = $config['stripe_publishable_key'];
+    $results['stripe_secret_key'] = $config['stripe_secret_key'];
 
-        $note_id = $insert_note->id();
+    /******************PAYSTACK*******************/
+    $results['paystack_public_key'] = $config['paystack_public_key'];
+    $results['paystack_secret_key'] = $config['paystack_secret_key'];
 
+    /******************PAYUMONEY*******************/
+    $results['payumoney_sandbox_mode'] = $config['payumoney_sandbox_mode'];
+    $results['payumoney_merchant_key'] = $config['payumoney_merchant_key'];
+    $results['payumoney_merchant_id'] = $config['payumoney_merchant_id'];
 
-        $info = ORM::for_table($config['db']['pre'].'firebase_device_token')
-            ->select('token')
-            ->where('user_id', $OwnerId)
-            ->find_one();
-        if(isset($info['token'])){
-            $token = $info['token'];
-            sendFCM($message,$token);
-        }
-    }
+    /******************2CHECKOUT*******************/
+    $results['checkout_account_number'] = $config['checkout_account_number'];
+    $results['checkout_public_key'] = $config['checkout_public_key'];
+    $results['checkout_private_key'] = $config['checkout_private_key'];
 
+    /******************PAYTM*******************/
+    /*$results['PAYTM_ENVIRONMENT'] = $config['PAYTM_ENVIRONMENT'];
+    $results['PAYTM_MERCHANT_KEY'] = $config['PAYTM_MERCHANT_KEY'];
+    $results['PAYTM_MERCHANT_MID'] = $config['PAYTM_MERCHANT_MID'];
+    $results['PAYTM_MERCHANT_WEBSITE'] = $config['PAYTM_MERCHANT_WEBSITE'];*/
+
+    /******************OFFLINE PAYMENT INFO*******************/
+    /*$results['company_bank_info'] = $config['company_bank_info'];
+    $results['company_cheque_info'] = $config['company_cheque_info'];
+    $results['cheque_payable_to'] = $config['cheque_payable_to'];*/
+
+    /******************SKRILL*******************/
+    //$results['skrill_merchant_id'] = $config['skrill_merchant_id'];
+
+    /******************NOCHEX*******************/
+    //$results['nochex_merchant_id'] = $config['nochex_merchant_id'];
+
+    send_json($results);
+    die();
 }
 
+/*
+Get unread count for notification and chat conversation
+action = unread_note_chat_count
+
+1. user_id
+
+Messages
+1. unread_notification
+2. unread_chat
+*/
+
+function unread_note_chat_count(){
+    global $config, $lang, $results;
+
+    $user_id = $_REQUEST["user_id"];
+
+    $notification_count = ORM::for_table($config['db']['pre'].'push_notification')
+        ->where(array(
+            'owner_id' => $user_id,
+            'recd' => '0',
+        ))
+        ->count();
+
+    $chat_count = ORM::for_table($config['db']['pre'].'messages')
+        ->where(array(
+            'to_id' => $user_id,
+            'seen' => '0',
+        ))
+        ->count();
+
+    $results['unread_notification'] = $notification_count;
+    $results['unread_chat'] = $chat_count;
+    send_json($results);
+    die();
+}
+function make_offer()
+{
+    global $config, $lang, $results;
+    $SenderName = $_REQUEST['SenderName'];
+    $SenderId = $_REQUEST['SenderId'];
+    $OwnerName = $_REQUEST['OwnerName'];
+    $OwnerId = $_REQUEST['OwnerId'];
+    $productId = $_REQUEST['productId'];
+    $productTitle = $_REQUEST['productTitle'];
+    $type = $_REQUEST['type'];
+    $message = $_REQUEST['message'];
+
+    //$email = $_REQUEST['email'];
+    //$subject = $_REQUEST['subject'];
+
+    //email($email,$SenderName,$subject,$message);
+    $noteMsg = "New offer for ".$productTitle;
+    if($note_id = add_firebase_notification($SenderName,$SenderId,$OwnerName,$OwnerId,$productId,$productTitle,$type,$message)){
+        sendFCM($noteMsg,$OwnerId,"Offer Received");
+    }
+
+    $results['status'] = "success";
+    send_json($results);
+    die();
+}
 
 /*
 Get Notification
@@ -252,6 +648,10 @@ function get_notification()
         $notification[] = $note;
     }
 
+    $pdo = ORM::get_db();
+    $query = "UPDATE `".$config['db']['pre']."push_notification` SET `recd` = '1' WHERE `owner_id` = '" . $user_id . "' ";
+    $pdo->query($query);
+
     $results = $notification;
     send_json($results);
     die();
@@ -279,33 +679,39 @@ function add_firebase_device_token()
     $name = isset($_REQUEST['name']) ? $_REQUEST['name'] : null;
     $token = isset($_REQUEST['token']) ? $_REQUEST['token'] : null;
 
-    $num_count = ORM::for_table($config['db']['pre'].'firebase_device_token')
-        ->where('device_id', $device_id)
-        ->count();
-    if($num_count == 1){
-        $pdo = ORM::get_db();
-        $sql = "UPDATE ".$config['db']['pre']."firebase_device_token SET 
-        user_id = '".$user_id."',
-        device_id = '".$device_id."',
-        name = '".$name."',
-        token = '".$token."' 
-        WHERE device_id = '".$device_id."'";
-        $query_result = $pdo->query($sql);
-    }else{
-        $insert_token = ORM::for_table($config['db']['pre'].'firebase_device_token')->create();
-        $insert_token->user_id = $user_id;
-        $insert_token->device_id = $device_id;
-        $insert_token->name = $name;
-        $insert_token->token = $token;
-        $insert_token->save();
+    if($token != null){
+        $num_count = ORM::for_table($config['db']['pre'].'firebase_device_token')
+            ->where('device_id', $device_id)
+            ->count();
+        if($num_count == 1){
+            $pdo = ORM::get_db();
+            $sql = "UPDATE ".$config['db']['pre']."firebase_device_token SET 
+            user_id = '".$user_id."',
+            device_id = '".$device_id."',
+            name = '".$name."',
+            token = '".$token."' 
+            WHERE device_id = '".$device_id."'";
+            $query_result = $pdo->query($sql);
+            $results['status'] = "success";
+        }else{
+            $insert_token = ORM::for_table($config['db']['pre'].'firebase_device_token')->create();
+            $insert_token->user_id = $user_id;
+            $insert_token->device_id = $device_id;
+            $insert_token->name = $name;
+            $insert_token->token = $token;
+            $insert_token->save();
 
-        $note_id = $insert_token->id();
+            $note_id = $insert_token->id();
+            $results['status'] = "success";
+        }
+    }else{
+        $results['status'] = "error";
     }
 
-    $results['status'] = "error";
     send_json($results);
     die();
 }
+
 /*
 User Login Api
 action = login
@@ -437,12 +843,7 @@ function register(){
         $status = "error";
         $message = $lang['ENTERUNAME'];
     }
-    elseif(preg_match('/[^A-Za-z0-9]/',$_REQUEST['username']))
-    {
-        $status = "error";
-        $message = $lang['USERALPHA'];
-    }
-    elseif( (strlen($_REQUEST['username']) < 4) OR (strlen($_REQUEST['username']) > 16) )
+    elseif( strlen($_REQUEST['username']) < 4 )
     {
         $status = "error";
         $message = $lang['USERLEN'];
@@ -654,7 +1055,7 @@ function get_userdata_by_email(){
     die();
 }
 
-function get_products_data($userid=null,$cat_id=null,$subcat_id=null,$location=false,$country_code=null,$city=null,$status=null,$premium=false,$page=null,$limit=null,$order=false,$sort="id",$sort_order="DESC"){
+function get_products_data($userid=null,$cat_id=null,$subcat_id=null,$location=false,$country_code=null,$state_code=null,$city=null,$status=null,$premium=false,$page=null,$limit=null,$order=false,$sort="id",$sort_order="DESC"){
     global $config,$con,$lang,$results;
     $where = '';
     if($userid != null){
@@ -689,7 +1090,9 @@ function get_products_data($userid=null,$cat_id=null,$subcat_id=null,$location=f
             $where .= "where p.hide = '1'";
         else
             $where .= " AND p.hide = '1'";
-    }else{
+    }
+
+    if($status != null){
         if($where == '')
             $where .= "where p.hide = '0'";
         else
@@ -712,6 +1115,20 @@ function get_products_data($userid=null,$cat_id=null,$subcat_id=null,$location=f
             $where .= "where p.country = '".$country_code."'";
         else
             $where .= " AND p.country = '".$country_code."'";
+
+        if($state_code != null){
+            if($where == '')
+                $where .= "where p.state = '".$state_code."'";
+            else
+                $where .= " AND p.state = '".$state_code."'";
+        }
+
+        if($city != null){
+            if($where == '')
+                $where .= "where p.city = '".$city."'";
+            else
+                $where .= " AND p.city = '".$city."'";
+        }
     }
 
    if($order){
@@ -746,13 +1163,15 @@ INNER JOIN `".$config['db']['pre']."user` as u ON u.id = p.user_id
 INNER JOIN `".$config['db']['pre']."usergroups` as g ON g.group_id = u.group_id
 $where ORDER BY $order_by $pagelimit";
 
+    //echo "<pre>". $query."</pre>";
+
     $result = $pdo->query($query);
     $rows = $result->rowCount();
     $items = array();
     if ($rows > 0) {
         foreach($result as $info) {
             $item['id'] = $info['id'];
-            $item['product_name'] = preg_replace('/[^A-Za-z0-9\-]/', ' ', $info['product_name']);
+            $item['product_name'] = $info['product_name'];
             $item['featured'] = $info['featured'];
             $item['urgent'] = $info['urgent'];
             $item['highlight'] = $info['highlight'];
@@ -776,7 +1195,18 @@ $where ORDER BY $order_by $pagelimit";
             $item['category'] = $get_main['cat_name'];
             $item['sub_category'] = $get_sub['sub_cat_name'];
 
-            $item['favorite'] = check_product_favorite($info['id']);
+            $fav_num_rows = ORM::for_table($config['db']['pre'].'favads')
+                ->where(array(
+                    'product_id' => $info['id'],
+                    'user_id' => $info['user_id']
+                ))
+                ->count();
+            if($fav_num_rows == 1)
+                $product_favorite = true;
+            else
+                $product_favorite = false;
+
+            $item['favorite'] = $product_favorite;
 
             if($info['tag'] != ''){
                 $item['showtag'] = "1";
@@ -823,10 +1253,181 @@ $where ORDER BY $order_by $pagelimit";
         //echo "0 results";
     }
 
-    return $items;
+    send_json($items);
+    die();
 }
 
+function featured_urgent_ads(){
+    global $config,$lang,$results;
 
+    $cat_id = isset($_REQUEST['category_id']) ? $_REQUEST['category_id'] : null;
+    $subcat_id = isset($_REQUEST['subcategory_id']) ? $_REQUEST['subcategory_id'] : null;
+
+    $user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : null;
+    $location = isset($_REQUEST['location']) ? $_REQUEST['location'] : false;
+    $country_code = isset($_REQUEST['country_code']) ? $_REQUEST['country_code'] : null;
+    $state_code = isset($_REQUEST['state']) ? $_REQUEST['state'] : null;
+    $city = isset($_REQUEST['city']) ? $_REQUEST['city'] : null;
+    $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
+    $premium = isset($_REQUEST['premium']) ? $_REQUEST['premium'] : false;
+    $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : '1';
+    $limit = isset($_REQUEST['limit']) ? $_REQUEST['limit'] : '10';
+    $sorting = isset($_REQUEST['sorting']) ? $_REQUEST['sorting'] : false;
+    $sort = isset($_REQUEST['sort']) ? $_REQUEST['sort'] : "id";
+    $sort_order = isset($_REQUEST['sort_order']) ? $_REQUEST['sort_order'] : "DESC";
+
+    if(isset($_REQUEST['country_code'])){
+        $location = true;
+    }
+
+
+    $where = "where (p.featured = '1' OR p.urgent = '1') ";
+
+    if($status != null && $status != "hide"){
+        $where .= " AND p.status = '".$status."'";
+    }
+
+    if($cat_id != null){
+        $where .= " AND p.category = '".$cat_id."'";
+    }
+
+    if($subcat_id != null){
+        $where .= " AND p.sub_category = '".$subcat_id."'";
+    }
+
+    if($status == "hide"){
+        $where .= " AND p.hide = '1'";
+    }else{
+        $where .= " AND p.hide = '0'";
+    }
+
+    if($location){
+        if($country_code == null){
+            $country_code = check_user_country();
+        }
+
+        $where .= " AND p.country = '".$country_code."'";
+
+        if($state_code != null){
+            $where .= " AND p.state = '".$state_code."'";
+        }
+
+        if($city != null){
+            $where .= " AND p.city = '".$city."'";
+        }
+    }
+
+    $order_by = $sort." ".$sort_order;
+
+    $pagelimit = "";
+    if($page != null && $limit != null){
+        $pagelimit = "LIMIT  ".($page-1)*$limit.",".$limit;
+    }
+
+    $pdo = ORM::get_db();
+
+    $query = "SELECT p.id,p.product_name,p.featured,p.urgent,p.highlight,p.price,p.category,p.sub_category,p.tag,p.screen_shot,p.user_id,p.city,p.country,p.status,p.hide,p.created_at,p.expire_date,
+u.group_id, g.show_on_home
+FROM `".$config['db']['pre']."product` as p
+INNER JOIN `".$config['db']['pre']."user` as u ON u.id = p.user_id
+INNER JOIN `".$config['db']['pre']."usergroups` as g ON g.group_id = u.group_id
+$where ORDER BY $sort $sort_order $pagelimit";
+
+    //echo "<pre>". $query."</pre>";
+
+    $result = $pdo->query($query);
+    $rows = $result->rowCount();
+    $items = array();
+    if ($rows > 0) {
+        foreach($result as $info) {
+            $item['id'] = $info['id'];
+            $item['product_name'] = $info['product_name'];
+            $item['featured'] = $info['featured'];
+            $item['urgent'] = $info['urgent'];
+            $item['highlight'] = $info['highlight'];
+            $item['highlight_bgClr'] = ($info['highlight'] == 1)? "highlight-premium-ad" : "";
+
+            $cityname = get_cityName_by_id($info['city']);
+            $item['location'] = $cityname;
+            $item['city'] = $cityname;
+            $item['status'] = $info['status'];
+            $item['hide'] = $info['hide'];
+
+            $item['created_at'] = timeAgo($info['created_at']);
+            $expire_date_timestamp = $info['expire_date'];
+            $expire_date = date('d-M-y', $expire_date_timestamp);
+            $item['expire_date'] = $expire_date;
+
+            $item['cat_id'] = $info['category'];
+            $item['sub_cat_id'] = $info['sub_category'];
+            $get_main = get_maincat_by_id($info['category']);
+            $get_sub = get_subcat_by_id($info['sub_category']);
+            $item['category'] = $get_main['cat_name'];
+            $item['sub_category'] = $get_sub['sub_cat_name'];
+
+
+            $fav_num_rows = ORM::for_table($config['db']['pre'].'favads')
+                ->where(array(
+                    'product_id' => $info['id'],
+                    'user_id' => $info['user_id']
+                ))
+                ->count();
+            if($fav_num_rows == 1)
+                $product_favorite = true;
+            else
+                $product_favorite = false;
+
+            $item['favorite'] = $product_favorite;
+
+            if($info['tag'] != ''){
+                $item['showtag'] = "1";
+                $item['tag'] = $info['tag'];
+            }else{
+                $item['tag'] = "";
+                $item['showtag'] = "0";
+            }
+
+            $picture = explode(',' ,$info['screen_shot']);
+            $item['pic_count'] = count($picture);
+
+            if($picture[0] != ""){
+                $item['picture'] = $config['site_url']."storage/products/thumb/".$picture[0];
+            }else{
+                $item['picture'] = $config['site_url']."storage/products/thumb/default.png";
+            }
+
+            $currency = set_user_currency($info['country']);
+            $item['price'] = !empty($info['price']) ? $info['price'] : null;
+            $item['currency'] = $currency['html_entity'];
+            $item['currency_in_left'] = $currency['in_left'];
+
+
+            $userinfo = get_user_data("",$info['user_id']);
+            $item['username'] = $userinfo['username'];
+            $item['user_id'] = $userinfo['id'];
+
+
+            if(check_user_upgrades($info['user_id']))
+            {
+                $sub_info = get_user_membership_detail($info['user_id']);
+                $item['subcription_title'] = $sub_info['sub_title'];
+                $item['subcription_image'] = $sub_info['sub_image'];
+            }else{
+                $item['subcription_title'] = '';
+                $item['subcription_image'] = '';
+            }
+
+            $items[] = $item;
+        }
+    }
+    else {
+        //echo "0 results";
+    }
+
+
+    send_json($items);
+    die();
+}
 
 /*
 Home page show premium ads
@@ -849,19 +1450,22 @@ function home_premium_ads(){
 	$user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : null;
 	$location = isset($_REQUEST['location']) ? $_REQUEST['location'] : false;
 	$country_code = isset($_REQUEST['country_code']) ? $_REQUEST['country_code'] : null;
+    $state_code = isset($_REQUEST['state']) ? $_REQUEST['state'] : null;
 	$city = isset($_REQUEST['city']) ? $_REQUEST['city'] : null;
 	$status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
 	$premium = isset($_REQUEST['premium']) ? $_REQUEST['premium'] : true;
-	$page = isset($_REQUEST['page']) ? $_REQUEST['page'] : null;
-	$limit = isset($_REQUEST['limit']) ? $_REQUEST['limit'] : null;
+    $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : '1';
+    $limit = isset($_REQUEST['limit']) ? $_REQUEST['limit'] : '10';
 	$sorting = isset($_REQUEST['sorting']) ? $_REQUEST['sorting'] : false;
 	$sort = isset($_REQUEST['sort']) ? $_REQUEST['sort'] : "id";
 	$sort_order = isset($_REQUEST['sort_order']) ? $_REQUEST['sort_order'] : "DESC";
-	
-	$results = get_products_data($user_id,$cat_id,$subcat_id,false,$country_code,$city,$status,$premium,$page,$limit,$order=false,$sort="id",$sort_order="DESC");
 
-    send_json($results);
-    die();
+    if(isset($_REQUEST['country_code'])){
+        $location = true;
+    }
+
+	$results = get_products_data($user_id,$cat_id,$subcat_id,$location,$country_code,$state_code,$city,$status,$premium,$page,$limit,$order=false,$sort="id",$sort_order="DESC");
+
 }
 
 
@@ -886,6 +1490,7 @@ function home_latest_ads(){
 	$user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : null;
 	$location = isset($_REQUEST['location']) ? $_REQUEST['location'] : false;
 	$country_code = isset($_REQUEST['country_code']) ? $_REQUEST['country_code'] : null;
+    $state_code = isset($_REQUEST['state']) ? $_REQUEST['state'] : null;
 	$city = isset($_REQUEST['city']) ? $_REQUEST['city'] : null;
 	$status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
 	$premium = isset($_REQUEST['premium']) ? $_REQUEST['premium'] : false;
@@ -895,13 +1500,46 @@ function home_latest_ads(){
 	$sort = isset($_REQUEST['sort']) ? $_REQUEST['sort'] : "id";
 	$sort_order = isset($_REQUEST['sort_order']) ? $_REQUEST['sort_order'] : "DESC";
 
-	if($_REQUEST['country_code']){
+	if(isset($_REQUEST['country_code'])){
         $location = true;
     }
 	
-	$results = get_products_data($user_id,$cat_id,$subcat_id,$location,$country_code,$city,$status,$premium,$page,$limit,$order=false,$sort="id",$sort_order="DESC");
+	$results = get_products_data($user_id,$cat_id,$subcat_id,$location,$country_code,$state_code,$city,$status,$premium,$page,$limit,$order=false,$sort="id",$sort_order="DESC");
 
-    send_json($results);
+}
+
+/*
+Related ads by category or subcategory
+action = related_ads
+1. category_id
+2. subcategory_id
+*/
+
+function related_ads(){
+    global $results;
+
+    $cat_id = isset($_REQUEST['category_id']) ? $_REQUEST['category_id'] : null;
+    $subcat_id = isset($_REQUEST['subcategory_id']) ? $_REQUEST['subcategory_id'] : null;
+
+    $user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : null;
+    $location = isset($_REQUEST['location']) ? $_REQUEST['location'] : false;
+    $country_code = isset($_REQUEST['country_code']) ? $_REQUEST['country_code'] : null;
+    $state_code = isset($_REQUEST['state']) ? $_REQUEST['state'] : null;
+    $city = isset($_REQUEST['city']) ? $_REQUEST['city'] : null;
+    $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
+    $premium = isset($_REQUEST['premium']) ? $_REQUEST['premium'] : false;
+    $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : '1';
+    $limit = isset($_REQUEST['limit']) ? $_REQUEST['limit'] : '10';
+    $sorting = isset($_REQUEST['sorting']) ? $_REQUEST['sorting'] : false;
+    $sort = isset($_REQUEST['sort']) ? $_REQUEST['sort'] : "id";
+    $sort_order = isset($_REQUEST['sort_order']) ? $_REQUEST['sort_order'] : "DESC";
+
+    if(isset($_REQUEST['country_code'])){
+        $location = true;
+    }
+
+    $results = get_products_data($user_id,$cat_id,$subcat_id,$location,$country_code,$state_code,$city,$status,$premium,$page,$limit,$order=false,$sort="id",$sort_order="DESC");
+
 }
 
 /*
@@ -992,7 +1630,8 @@ function ad_detail(){
             $item['small_images_path'] = $config['site_url'].'storage/products/thumb/';
             $item['images'] = explode(",",$info['screen_shot']);
             $item['tag'] = $info['tag'];
-            $item['description'] = strip_tags($info['description']);
+            //$item['description'] = strip_tags(html_entity_decode(stripslashes(nl2br($info['description'])),ENT_NOQUOTES,"Utf-8"));
+            $item['description'] = stripslashes(nl2br($info['description']));
 
             $pro_url = create_slug($info['product_name']);
 
@@ -1060,6 +1699,61 @@ function ad_detail(){
     }
 
     send_json($results);
+}
+
+/*
+Ad delete by ad id
+action = ad_delete
+1. item_id
+1. user_id
+
+Messages
+1. status : success or error
+*/
+
+function ad_delete()
+{
+    global $config,$results;
+    if(isset($_REQUEST['item_id']))
+    {
+        $row = ORM::for_table($config['db']['pre'].'product')
+            ->select('screen_shot')
+            ->where(array(
+                'id' => $_REQUEST['item_id'],
+                'user_id' => $_REQUEST['user_id'],
+            ))
+            ->find_one();
+
+        if (!empty($row)) {
+            $uploaddir =  "../../storage/products/";
+            $screen_sm = explode(',',$row['screen_shot']);
+            foreach ($screen_sm as $value)
+            {
+                $value = trim($value);
+                //Delete Image From Storage ----
+                $filename1 = $uploaddir.$value;
+                if(file_exists($filename1)){
+                    $filename1 = $uploaddir.$value;
+                    $filename2 = $uploaddir."small_".$value;
+                    unlink($filename1);
+                    unlink($filename2);
+                }
+            }
+
+            ORM::for_table($config['db']['pre'].'product')
+                ->where(array(
+                    'id' => $_REQUEST['item_id'],
+                    'user_id' => $_REQUEST['user_id'],
+                ))
+                ->delete_many();
+        }
+
+        $results['status'] = "success";
+    }else {
+        $results['status'] = "error";
+    }
+    send_json($results);
+    die();
 }
 
 function get_countries_list($selected="",$selected_text='selected',$installed=1)
@@ -1141,6 +1835,7 @@ function installed_countries(){
 
     $results['status'] = "error";
     $results['message'] = "No country found";
+    send_json($results);
 }
 
 /*
@@ -1276,7 +1971,7 @@ function getCityidByCityName()
     }
 
     $results['status'] = "error";
-    $results['message'] = $lang['NO-RESULT-FOUND'];
+    $results['message'] = $lang['NO_RESULT_FOUND'];
     send_json($results);
     die();
 }
@@ -1407,6 +2102,7 @@ function get_all_msg() {
         $chatting['mtype'] = $chat['message_type'];
         $chatting['message'] = $chatContent;
         $chatting['time'] = $timeago;
+        $chatting['recd'] = $chat['recd'];
         $chatting['seen'] = $chat['seen'];
 
         $chat_message[] = $chatting;
@@ -1414,10 +2110,8 @@ function get_all_msg() {
 
     $results = $chat_message;
 
-    $pdo = ORM::get_db();
-
-    $sql = "update `".$config['db']['pre']."messages` set recd = 1 where to_id = '".$ses_userid."' and recd = 0";
-    $query = $pdo->query($sql);
+    $query = "UPDATE `".$config['db']['pre']."messages` SET `recd` = '1', `seen` = '1' WHERE (to_id = '".$ses_userid."' AND from_id = '".$client_id."') OR (to_id = '".$client_id."' AND from_id = '".$ses_userid."' ) ";
+    $query = $con->query($query);
 
     send_json($results);
     die();
@@ -1535,7 +2229,7 @@ function chat_conversation()
     }
     else{
         $results['status'] = "error";
-        $results['message'] = $lang['NO-RESULT-FOUND'];
+        $results['message'] = $lang['NO_RESULT_FOUND'];
     }
 
     send_json($results);
@@ -1562,7 +2256,8 @@ function send_message()
     $from_id = $_REQUEST['from_id'];
     $to_id = $_REQUEST['to_id'];
     $message = $_REQUEST['message'];
-    $now = time();
+    //$now = time();
+    $timenow = date('Y-m-d H:i:s');
 
     $info = ORM::for_table($config['db']['pre'].'user')
         ->select('username')
@@ -1580,11 +2275,17 @@ function send_message()
     if($to){
 
         //$pdo = ORM::get_db();
-        $sql = "insert into `".$config['db']['pre']."messages` (from_uname,to_uname,from_id,to_id,message_content,message_type,message_date) values ('".mysqli_real_escape_string($con,$from)."', '".mysqli_real_escape_string($con,$to)."','".mysqli_real_escape_string($con,$from_id)."','".mysqli_real_escape_string($con,$to_id)."','".mysqli_real_escape_string($con,$message)."','text','".$now."')";
+        $sql = "insert into `".$config['db']['pre']."messages` (from_uname,to_uname,from_id,to_id,message_content,message_type,message_date) values ('".mysqli_real_escape_string($con,$from)."', '".mysqli_real_escape_string($con,$to)."','".mysqli_real_escape_string($con,$from_id)."','".mysqli_real_escape_string($con,$to_id)."','".mysqli_real_escape_string($con,$message)."','text','".$timenow."')";
 
         $query = $con->query($sql);
 
         $msg_id = $con->insert_id;
+
+        /*SEND AD DELETED FIREBASE NOTIFICATION TO AUTHOR*/
+        $note_title = "New Message Received!!";
+        $message = $from." sent you a message.";
+        sendFCM($message,$to_id,$note_title,$sending_type = "one_user");
+
 
         $results['status'] = $msg_id;
         send_json($results);
@@ -1595,7 +2296,6 @@ function send_message()
         send_json($results);
         die();
     }
-
 
     $results['status'] = "error";
     send_json($results);
@@ -1778,9 +2478,9 @@ function custom_fields_json(){
 function send_cusdata_getjson(){
     global $config,$lang;
     $cusfields = array();
-    $maincatid = isset($_REQUEST['catid']) ? $_REQUEST['catid'] : 0;
-    $subcatid = isset($_REQUEST['subcatid']) ? $_REQUEST['subcatid'] : 0;
-    if ($maincatid > 0) {
+    $maincatid = isset($_REQUEST['catid']) ? $_REQUEST['catid'] : null;
+    $subcatid = isset($_REQUEST['subcatid']) ? $_REQUEST['subcatid'] : null;
+    if ($maincatid != null) {
         $custom_fields = get_customFields_by_catid($maincatid,$subcatid);
         if(isset($_REQUEST['custom'])){
             foreach ($custom_fields as $key => $value) {
@@ -1856,8 +2556,18 @@ function getCustomFieldByCatID()
 {
     global $config,$lang;
     $cusfields = array();
-    $maincatid = isset($_REQUEST['catid']) ? $_REQUEST['catid'] : 0;
-    $subcatid = isset($_REQUEST['subcatid']) ? $_REQUEST['subcatid'] : 0;
+
+    if(is_numeric($_REQUEST['catid']) && $_REQUEST['catid'] != 0){
+        $maincatid = isset($_REQUEST['catid']) ? $_REQUEST['catid'] : null;
+    }else{
+        $maincatid = null;
+    }
+
+    if(is_numeric($_REQUEST['subcatid']) && $_REQUEST['subcatid'] != 0){
+        $subcatid = isset($_REQUEST['subcatid']) ? $_REQUEST['subcatid'] : null;
+    }else{
+        $subcatid = null;
+    }
 
     if(isset($_REQUEST['additionalinfo'])){
         $_REQUEST['custom'] = array();
@@ -1876,21 +2586,19 @@ function getCustomFieldByCatID()
             $custom_fields = get_customFields_by_catid($maincatid,$subcatid,false, $field_id, $field_value);
             $showCustomField = (count($custom_fields) > 0) ? 1 : 0;
 
-        }elseif ($maincatid > 0) {
+        }elseif ($maincatid != null) {
             $custom_fields = get_customFields_by_catid($maincatid,$subcatid);
             $showCustomField = (count($custom_fields) > 0) ? 1 : 0;
         } else {
             $showCustomField = 0;
-            die();
         }
 
     }else{
-        if ($maincatid > 0) {
+        if ($maincatid != null) {
             $custom_fields = get_customFields_by_catid($maincatid,$subcatid);
             $showCustomField = (count($custom_fields) > 0) ? 1 : 0;
         } else {
             $showCustomField = 0;
-            die();
         }
     }
 
@@ -1957,8 +2665,7 @@ echo '<!DOCTYPE html>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">   
     <title>Additional information form</title>
 
     <!-- Latest compiled and minified CSS -->
@@ -1968,12 +2675,15 @@ echo '<!DOCTYPE html>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
   
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-   <link rel="stylesheet" href="checkbox-radio.css">
+    
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/checkbox-radio.css">
+    
   </head>
-  <body>
+  <body class="pad-20">
         <form method="post" id="custom_field_frm" action="'.$config['site_url'].'api/v1/?action=send_cusdata_getjson" accept-charset="UTF-8">
         '.$tpl.'
-        <input type="submit"  type="button" value="Done" class="button btn-info">
+        <input type="submit"  type="button" value="Done" class="btn btn-success">
         </form>
         
        <script type="text/javascript">
@@ -2062,6 +2772,7 @@ function save_post(){
     $mapLong = $_REQUEST['longitude'];
     $latlong = $mapLat . "," . $mapLong;
     $slug = create_post_slug($_REQUEST['title']);
+    $description = addslashes($description);
 
     // Get usergroup details
     $user_info = ORM::for_table($config['db']['pre'].'user')
@@ -2182,7 +2893,8 @@ function search_post(){
     $budget = isset($_REQUEST['budget']) ? $_REQUEST['budget'] : "";
     $keywords = isset($_REQUEST['keywords']) ? str_replace("-"," ",$_REQUEST['keywords']) : "";
     $city = isset($_REQUEST['city']) && ($_REQUEST['city'] != "") ? $_REQUEST['city'] : "";
-
+    $country_code = isset($_REQUEST['country_code']) ? $_REQUEST['country_code'] : null;
+    $state_code = isset($_REQUEST['state']) ? $_REQUEST['state'] : null;
 
     if(!isset($_REQUEST['sort']))
         $sort = "id";
@@ -2255,26 +2967,14 @@ function search_post(){
         $range2 = "";
     }
 
-    if(isset($_REQUEST['city']) && !empty($_REQUEST['city'])) {
-
-        $where.= "AND (p.city = '".$_REQUEST['city']."') ";
-    }
-    elseif(isset($_REQUEST['location']) && !empty($_REQUEST['location'])) {
-
-        $placetype = $_REQUEST['placetype'];
-        $placeid = $_REQUEST['placeid'];
-
-        if($placetype == "country"){
-            $where.= "AND (p.country = '$placeid') ";
-        }elseif($placetype == "state"){
-            $where.= "AND (p.state = '$placeid') ";
-        }else{
-            $where.= "AND (p.city = '$placeid') ";
-        }
-    }
-    else{
-        $country_code = check_user_country();
+    if($country_code != null){
         $where.= "AND (p.country = '$country_code') ";
+    }
+    if($state_code != null){
+        $where.= "AND (p.state = '$state_code') ";
+    }
+    if($city != null){
+        $where.= "AND (p.city = '$city') ";
     }
 
     $additionalinfo = isset($_REQUEST['additionalinfo']) ? $_REQUEST['additionalinfo'] : null;
@@ -2495,35 +3195,6 @@ FROM `".$config['db']['pre']."product` AS p
     die();
 }
 
-
-function make_offer()
-{
-    global $config, $lang, $results;
-    $SenderName = $_REQUEST['SenderName'];
-    $SenderId = $_REQUEST['SenderId'];
-    $OwnerName = $_REQUEST['OwnerName'];
-    $OwnerId = $_REQUEST['OwnerId'];
-    $productId = $_REQUEST['productId'];
-    $productTitle = $_REQUEST['productTitle'];
-    $type = $_REQUEST['type'];
-    $message = $_REQUEST['message'];
-
-    $email = $_REQUEST['email'];
-    $subject = $_REQUEST['subject'];
-
-
-
-    //email($email,$SenderName,$subject,$message);
-
-    add_notification($SenderName,$SenderId,$OwnerName,$OwnerId,$productId,$productTitle,$type,$message);
-
-
-
-    $results['status'] = "success";
-    send_json($results);
-    die();
-}
-
 function upload_product_picture(){
     global $config,$results;
 
@@ -2555,7 +3226,6 @@ function upload_product_picture(){
     send_json($results);
     die();
 }
-
 
 function upload_profile_picture(){
     global $config,$results;
@@ -2600,33 +3270,21 @@ function upload_profile_picture(){
     die();
 }
 
-function sendFCM($mess,$id) {
-    $url = 'https://fcm.googleapis.com/fcm/send';
-    $fields = array (
-        'to' => $id,
-        'notification' => array (
-            "body" => $mess,
-            "title" => "Title",
-            "icon" => "myicon"
-        )
-    );
-    $fields = json_encode ( $fields );
-    $headers = array (
-        'Authorization: key=' . "AAAAPwvjc5I:APA91bFf8l14tuvDM4eU6XMyXDXOhktFMk8PxSl0wwWMg_w3CufvsnX8sXoivnBh8UdvpvGoMk163LnWvM2IzKZlPm63kTtPfDHuTrYFxQRKT4f76vFrn8zq_b00yoI6U064xd_U_eJs",
-        'Content-Type: application/json'
-    );
+function payumoney_create_hash(){
+    if(strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') == 0){
+        //Request hash
+        $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
+        if(strcasecmp($contentType, 'application/json') == 0){
+            $data = json_decode(file_get_contents('php://input'));
+            $hash=hash('sha512', $data->key.'|'.$data->txnid.'|'.$data->amount.'|'.$data->pinfo.'|'.$data->fname.'|'.$data->email.'|||||'.$data->udf5.'||||||'.$data->salt);
+            $json=array();
+            $json['hash'] = $hash;
+            echo json_encode($json);
 
-    $ch = curl_init ();
-    curl_setopt ( $ch, CURLOPT_URL, $url );
-    curl_setopt ( $ch, CURLOPT_POST, true );
-    curl_setopt ( $ch, CURLOPT_HTTPHEADER, $headers );
-    curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
-    curl_setopt ( $ch, CURLOPT_POSTFIELDS, $fields );
-
-    $result = curl_exec ( $ch );
-    curl_close ( $ch );
+        }
+        exit(0);
+    }
 }
-
 
 function send_json($results = array()){
     //echo "<pre>". print_r($results)."</pre>";

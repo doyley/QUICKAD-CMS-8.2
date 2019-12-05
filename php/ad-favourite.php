@@ -32,6 +32,19 @@ if(checkloggedin()) {
             if (!empty($info)) {
                 $item[$info['id']]['id'] = $info['id'];
                 $item[$info['id']]['product_name'] = $info['product_name'];
+
+                $description = strip_tags($info['description']);
+                if (strlen($description) > 150) {
+
+                    // truncate string
+                    $stringCut = substr($description, 0, 150);
+                    $endPoint = strrpos($stringCut, ' ');
+
+                    //if the string doesn't contain any space then it will cut without word basis.
+                    $description = $endPoint? substr($stringCut, 0, $endPoint) : substr($stringCut, 0);
+                    $description .= '... <a href="'.$config['site_url'].'ad/'.$info['id'].'">'.$lang['READ_MORE'].'</a>';
+                }
+                $item[$info['id']]['desc'] = $description;
                 $item[$info['id']]['featured'] = $info['featured'];
                 $item[$info['id']]['urgent'] = $info['urgent'];
                 $item[$info['id']]['highlight'] = $info['highlight'];
@@ -43,6 +56,7 @@ if(checkloggedin()) {
                 $item[$info['id']]['status'] = $info['status'];
                 $item[$info['id']]['created_at'] = timeago($info['created_at']);
 
+                $item[$info['id']]['rating'] = averageRating_by_itemid($info['id']);
                 $item[$info['id']]['cat_id'] = $info['category'];
                 $item[$info['id']]['sub_cat_id'] = $info['sub_category'];
 

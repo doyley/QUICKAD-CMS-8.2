@@ -27,7 +27,6 @@ if( !empty($params['search']['value']) ) {
     $where .=" ( username LIKE '".$params['search']['value']."%' ";
     $where .=" OR name LIKE '".$params['search']['value']."%' ";
     $where .=" OR email LIKE '".$params['search']['value']."%' ";
-
     $where .=" OR sex LIKE '".$params['search']['value']."%' )";
 }
 
@@ -55,7 +54,8 @@ foreach ($queryRecords as $row) {
     $id = $row['id'];
     $username = $row['username'];
     $name = $row['name'];
-    $email = strlimiter($row['email'],12);
+    $email = strlimiter($row['email'],12)."...";
+    //$email = $row['email'];
     $sex = $row['sex'];
     $image = $row['image'];
     $status = $row['status'];
@@ -88,7 +88,7 @@ foreach ($queryRecords as $row) {
                 <p class="font-500 m-b-0"><a href="#" data-url="panel/user_profile.php?id='.$id.'" data-toggle="slidePanel"">'.$name.'</a></p>
                 <p class="text-muted m-b-0">#'.$username.'</p>
             </td>';
-    $row2 = '<td class="hidden-xs">*********</td>';
+    $row2 = '<td class="hidden-xs">'.$email.'</td>';
     $row3 = '<td class="hidden-xs hidden-sm">'.$sex.'</td>';
     $row4 = '<td class="hidden-xs hidden-sm">'.$status.'</td>';
     $row5 = '<td class="hidden-xs hidden-sm">'.$joined.'</td>';
